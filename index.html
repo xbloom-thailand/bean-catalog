@@ -642,6 +642,42 @@ tbody tr:hover td { background: #f9f9f5; }
 .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--dark); border-radius: 50%; animation: sp .7s linear infinite; vertical-align: middle; margin-right: 6px; }
 @keyframes sp { to { transform: rotate(360deg); } }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
+/* ── FORM TABS ── */
+.form-tabs {
+  display: flex; gap: 2px;
+  padding: 14px 22px 0;
+  border-bottom: 1px solid var(--border2);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.ftab {
+  padding: 8px 16px; font-size: 12px; font-weight: 500;
+  font-family: inherit; cursor: pointer; border: none;
+  background: transparent; color: var(--light);
+  border-bottom: 2px solid transparent;
+  transition: all .15s; border-radius: 4px 4px 0 0;
+  margin-bottom: -1px;
+}
+.ftab:hover { color: var(--dark2); }
+.ftab.active { color: var(--dark); border-bottom-color: var(--dark); background: var(--white); }
+.ftab-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent); color: #fff;
+  font-size: 9px; font-weight: 700;
+  margin-left: 5px; vertical-align: middle;
+}
+.form-tab-content { display: none; padding: 20px 22px; }
+.form-tab-content.active { display: flex; flex-direction: column; gap: 14px; }
+
+/* field groups within tabs */
+.field-row { display: grid; gap: 12px; }
+.fr-2 { grid-template-columns: 1fr 1fr; }
+.fr-3 { grid-template-columns: 1fr 1fr 1fr; }
+.fr-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.fr-12 { grid-template-columns: 1fr 2fr; }
+.fr-13 { grid-template-columns: 1fr 3fr; }
+
 /* ── ANALYTICS MODAL ── */
 .analytics-card {
   background: var(--white); border: 1px solid var(--border2);
@@ -1168,91 +1204,157 @@ tbody tr:hover td { background: #f9f9f5; }
 
 <!-- ══ FORM MODAL ══ -->
 <div class="ov" id="fmOv">
-  <div class="modal">
-    <div class="mh">
+  <div class="modal" style="width:680px">
+    <!-- Header -->
+    <div class="mh" style="border-bottom:none;padding-bottom:0">
       <div class="mt" id="fmT">Add New Bean</div>
       <button class="mx" onclick="closeFm()">✕</button>
     </div>
-    <div class="mb">
-      <div class="sec">Basic Info</div>
-      <div class="fg f4">
-        <div class="fi"><label>Status</label>
+    <!-- Tabs -->
+    <div class="form-tabs">
+      <button class="ftab active" id="ftab0" onclick="switchTab(0)">🫘 Bean</button>
+      <button class="ftab" id="ftab1" onclick="switchTab(1)">📦 Stock</button>
+      <button class="ftab" id="ftab2" onclick="switchTab(2)">☕ Coffee</button>
+      <button class="ftab" id="ftab3" onclick="switchTab(3)">🔗 Sales & Recipe</button>
+    </div>
+
+    <!-- TAB 0: Bean (Essential) -->
+    <div class="form-tab-content active" id="ftc0">
+      <div class="field-row fr-13">
+        <div class="fi">
+          <label>Status</label>
           <select id="f_st"><option>Active</option><option>Nearly Empty</option><option>Cannot Refill</option></select>
         </div>
-        <div class="fi"><label>Item Code</label><input id="f_cd" placeholder="XB-001"></div>
-        <div class="fi sp2"><label>Item Name *</label><input id="f_nm" placeholder="Ethiopia Yirgacheffe…"></div>
-        <div class="fi"><label>Packing Type</label>
+        <div class="fi">
+          <label>Item Name *</label>
+          <input id="f_nm" placeholder="Ethiopia Yirgacheffe…">
+        </div>
+      </div>
+      <div class="field-row fr-4">
+        <div class="fi">
+          <label>Item Code</label>
+          <input id="f_cd" placeholder="XB-001">
+        </div>
+        <div class="fi">
+          <label>Packing Type</label>
           <select id="f_pk"><option value="">— select —</option>
             <option>Roasted Bean (KG)</option><option>Sachet (PCS)</option><option>Sachet (Pack)</option>
             <option>xPod (PCS)</option><option>xPod (Pack)</option><option>Demo (Pod)</option><option>Demo (PCS)</option>
           </select>
         </div>
-        <div class="fi"><label>Collaboration Type</label>
+        <div class="fi">
+          <label>Collaboration Type</label>
           <select id="f_cl"><option value="">— select —</option>
             <option>XB Bean - Everyday</option><option>XB Bean - Silver</option><option>XB Bean - Gold</option>
             <option>Collaboration</option><option>Collaboration - Silver</option><option>Collaboration - Gold</option>
           </select>
         </div>
-        <div class="fi"><label>Taste Type</label>
+        <div class="fi">
+          <label>Price (THB)</label>
+          <input id="f_pr" type="number" placeholder="0">
+        </div>
+      </div>
+      <div class="field-row fr-2">
+        <div class="fi">
+          <label>Taste Type</label>
           <select id="f_tt"><option value="">— select —</option>
             <option>Fruity</option><option>Floral</option><option>Nutty/Cocolately</option>
             <option>Bold/Bitter</option><option>Bitter&amp;Fruity</option><option>Highly Complex</option>
           </select>
         </div>
-        <div class="fi"><label>Price (THB)</label><input id="f_pr" type="number" placeholder="0"></div>
-        <div class="fi spa">
-          <label>Graphic Link (Google Drive)</label>
-          <input id="f_gl" placeholder="https://drive.google.com/file/d/FILE_ID/view">
-          <span class="hint">Paste the "Anyone with link" share URL — will auto-convert to image</span>
+        <div class="fi">
+          <label>Image (Google Drive link)</label>
+          <input id="f_gl" placeholder="https://drive.google.com/file/d/…/view">
         </div>
       </div>
+      <div class="fi">
+        <label>Description <span style="font-weight:400;color:var(--lighter)">— shown to customers</span></label>
+        <textarea id="f_desc" rows="5" placeholder="บรรยายรายละเอียดเมล็ด สวน กระบวนการ หรือ story ของ bean…&#10;&#10;Clean Sweet, Mountain Grown&#10;xPod : Sazamoo Doi Inthanon"></textarea>
+      </div>
+    </div>
 
-      <div class="sec">Stock</div>
-      <div class="fg f3">
-        <div class="fi"><label>Stock Prediction</label>
-          <select id="f_sp"><option value="">— select —</option>
-            <option>Empty in 1 week</option><option>Empty in 2 week</option><option>&gt; 2 week usage</option>
-          </select>
+    <!-- TAB 1: Stock -->
+    <div class="form-tab-content" id="ftc1">
+      <div class="field-row fr-3">
+        <div class="fi">
+          <label>Stock HQ</label>
+          <input id="f_hq" type="number" placeholder="0">
         </div>
-        <div class="fi"><label>Stock Updated Date</label><input id="f_sd" type="date"></div>
-        <div class="fi"><label>Bean in Stock (KG)</label><input id="f_bkg" type="number" placeholder="0"></div>
-        <div class="fi"><label>New Refill Date</label><input id="f_id" type="date"></div>
-        <div class="fi"><label>Stock HQ</label><input id="f_hq" type="number" placeholder="0"></div>
-        <div class="fi"><label>Stock CTW</label><input id="f_cw" type="number" placeholder="0"></div>
-        <div class="fi"><label>Stock BH</label><input id="f_kb" type="number" placeholder="0"></div>
-      </div>
-
-      <div class="sec">Coffee Details</div>
-      <div class="fg f3">
-        <div class="fi"><label>Roaster</label><input id="f_ro" placeholder="Roaster name"></div>
-        <div class="fi"><label>Roasting Level</label><input id="f_rl" placeholder="Light / Medium / Dark"></div>
-        <div class="fi"><label>Elevation</label><input id="f_el" placeholder="1800 masl"></div>
-        <div class="fi"><label>Process Method</label><input id="f_pm" placeholder="Washed / Natural / Honey"></div>
-        <div class="fi"><label>Origin</label><input id="f_or" placeholder="Ethiopia, Colombia…"></div>
-        <div class="fi"><label>Varieties</label><input id="f_va" placeholder="Heirloom, Gesha…"></div>
-        <div class="fi"><label>Farm</label><input id="f_farm" placeholder="ชื่อฟาร์ม / Farm name…"></div>
-        <div class="fi sp3"><label>Tasting Notes</label><textarea id="f_tn" placeholder="Blueberry, Jasmine, Dark Chocolate…"></textarea></div>
-      </div>
-
-      <div class="sec">Recipes</div>
-      <div class="fg f2">
-        <div class="fi"><label>Hot Recipe Link</label><input id="f_hl" placeholder="https://…"></div>
-        <div class="fi"><label>Hot Recipe ID</label><input id="f_hi" placeholder="HOT-001"></div>
-        <div class="fi"><label>Cold Recipe Link</label><input id="f_col" placeholder="https://…"></div>
-        <div class="fi"><label>Cold Recipe ID</label><input id="f_ci" placeholder="COLD-001"></div>
-        <div class="fi spa"><label>Picture URL (direct)</label><input id="f_pi" placeholder="https://… (alt: direct image URL)"></div>
-      </div>
-
-      <div class="sec">Bean Description</div>
-      <div class="fg">
-        <div class="fi spa">
-          <label>Description <span style="font-weight:400;color:var(--lighter)">(Thai / English — shown to customers)</span></label>
-          <textarea id="f_desc" rows="7" placeholder="Clean Sweet, Mountain Grown&#10;xPod : Sazamoo Doi Inthanon&#10;&#10;บรรยายรายละเอียดเมล็ด สวน กระบวนการ หรือ story ของ bean..."></textarea>
+        <div class="fi">
+          <label>Stock CTW</label>
+          <input id="f_cw" type="number" placeholder="0">
+        </div>
+        <div class="fi">
+          <label>Stock BH</label>
+          <input id="f_kb" type="number" placeholder="0">
         </div>
       </div>
+      <div class="field-row fr-3">
+        <div class="fi">
+          <label>Bean in Stock (KG)</label>
+          <input id="f_bkg" type="number" placeholder="0" step="0.1">
+        </div>
+        <div class="fi">
+          <label>Stock Updated Date</label>
+          <input id="f_sd" type="date">
+        </div>
+        <div class="fi">
+          <label>Refill Date</label>
+          <input id="f_id" type="date">
+        </div>
+      </div>
+      <div class="fi">
+        <label>Stock Prediction</label>
+        <select id="f_sp"><option value="">— select —</option>
+          <option>Empty in 1 week</option><option>Empty in 2 week</option><option>&gt; 2 week usage</option>
+        </select>
+      </div>
+    </div>
 
-      <div class="sec">Sales Channels</div>
-      <div class="fg f2">
+    <!-- TAB 2: Coffee Details -->
+    <div class="form-tab-content" id="ftc2">
+      <div class="field-row fr-3">
+        <div class="fi">
+          <label>Origin</label>
+          <input id="f_or" placeholder="Ethiopia, Colombia…">
+        </div>
+        <div class="fi">
+          <label>Process Method</label>
+          <input id="f_pm" placeholder="Washed / Natural / Honey">
+        </div>
+        <div class="fi">
+          <label>Roasting Level</label>
+          <input id="f_rl" placeholder="Light / Medium / Dark">
+        </div>
+      </div>
+      <div class="field-row fr-3">
+        <div class="fi">
+          <label>Roaster</label>
+          <input id="f_ro" placeholder="Roaster name">
+        </div>
+        <div class="fi">
+          <label>Farm</label>
+          <input id="f_farm" placeholder="ชื่อฟาร์ม / Farm name…">
+        </div>
+        <div class="fi">
+          <label>Elevation</label>
+          <input id="f_el" placeholder="1800 masl">
+        </div>
+      </div>
+      <div class="fi">
+        <label>Varieties</label>
+        <input id="f_va" placeholder="Heirloom, Gesha, Caturra…">
+      </div>
+      <div class="fi">
+        <label>Tasting Notes</label>
+        <input id="f_tn" placeholder="Blueberry, Jasmine, Dark Chocolate…">
+      </div>
+    </div>
+
+    <!-- TAB 3: Sales & Recipe -->
+    <div class="form-tab-content" id="ftc3">
+      <div style="font-size:11px;font-weight:600;color:var(--lighter);letter-spacing:.5px;text-transform:uppercase;margin-bottom:-6px">Sales Channels</div>
+      <div class="field-row fr-2">
         <div class="fi">
           <label>Shopee Link</label>
           <input id="f_shopee" placeholder="https://shopee.co.th/…">
@@ -1262,8 +1364,36 @@ tbody tr:hover td { background: #f9f9f5; }
           <input id="f_line" placeholder="https://lin.ee/…">
         </div>
       </div>
+      <div style="font-size:11px;font-weight:600;color:var(--lighter);letter-spacing:.5px;text-transform:uppercase;margin-bottom:-6px;margin-top:6px">Brewing Recipes</div>
+      <div class="field-row fr-2">
+        <div class="fi">
+          <label>Hot Recipe Link</label>
+          <input id="f_hl" placeholder="https://…">
+        </div>
+        <div class="fi">
+          <label>Hot Recipe ID</label>
+          <input id="f_hi" placeholder="HOT-001">
+        </div>
+        <div class="fi">
+          <label>Cold Recipe Link</label>
+          <input id="f_col" placeholder="https://…">
+        </div>
+        <div class="fi">
+          <label>Cold Recipe ID</label>
+          <input id="f_ci" placeholder="COLD-001">
+        </div>
+      </div>
+      <div class="fi">
+        <label>Picture URL (direct)</label>
+        <input id="f_pi" placeholder="https://… (alternative image URL)">
+      </div>
     </div>
+
     <div class="mf">
+      <div style="display:flex;gap:6px;margin-right:auto">
+        <button class="btn btn-outline btn-sm" id="fPrev" onclick="switchTab(currentTab-1)" style="display:none">← Back</button>
+        <button class="btn btn-outline btn-sm" id="fNext" onclick="switchTab(currentTab+1)">Next →</button>
+      </div>
       <button class="btn btn-outline" onclick="closeFm()">Cancel</button>
       <button class="btn btn-dark" id="saveBtn" onclick="saveBean()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
@@ -1702,6 +1832,22 @@ function filterLog(){
 }
 
 
+
+// ── FORM TABS ──
+let currentTab = 0;
+const TOTAL_TABS = 4;
+
+function switchTab(n){
+  n = Math.max(0, Math.min(TOTAL_TABS-1, n));
+  currentTab = n;
+  for(let i=0;i<TOTAL_TABS;i++){
+    document.getElementById('ftab'+i)?.classList.toggle('active', i===n);
+    document.getElementById('ftc'+i)?.classList.toggle('active', i===n);
+  }
+  document.getElementById('fPrev').style.display = n>0 ? '' : 'none';
+  document.getElementById('fNext').style.display = n<TOTAL_TABS-1 ? '' : 'none';
+}
+
 // ── BEAN DETAIL MODAL ──
 function openBeanDetail(rowNum){
   const r = all.find(x=>x._rowNum===rowNum);
@@ -2050,7 +2196,7 @@ function loadSheet(silent){
       setSyncStatus('live', 'Live · ' + new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'}));
       document.getElementById('warnBanner').className = 'warn-banner';
       clearTimeout(reloadTimer); reloadTimer = setTimeout(()=>loadSheet(true), 30000);
-      if(!silent) toast('Loaded ' + all.length + ' beans', 'success');
+      if(!silent && isAdmin) toast('Loaded ' + all.length + ' beans', 'success');
     } else {
       setSyncStatus('err','Error');
       setTb(`<tr class="ph"><td colspan="26">❌ ${res.message||'โหลดไม่สำเร็จ'}</td></tr>`);
@@ -2506,14 +2652,14 @@ function updateStats(){
 // ── FORM ──
 function openAdd(){
   if(!SCRIPT_URL){ toast('Set Apps Script URL in Settings first','error'); openCfg(); return; }
-  editR=null; document.getElementById('fmT').textContent='Add New Bean'; clrFm();
+  editR=null; document.getElementById('fmT').textContent='Add New Bean'; clrFm(); switchTab(0);
   document.getElementById('fmOv').classList.add('open');
 }
 function openEdit(rn){
   if(!SCRIPT_URL){ toast('Set Apps Script URL in Settings first','error'); openCfg(); return; }
   const r=all.find(x=>x._rowNum===rn); if(!r) return;
   editR=rn; document.getElementById('fmT').textContent='Edit: '+(r['Item Name']||'');
-  Object.entries(FM).forEach(([id,col])=>{ const el=document.getElementById(id); if(el) el.value=r[col]||''; });
+  Object.entries(FM).forEach(([id,col])=>{ const el=document.getElementById(id); if(el) el.value=r[col]||''; }); switchTab(0);
   document.getElementById('fmOv').classList.add('open');
 }
 function openDuplicate(rn){
