@@ -852,7 +852,8 @@ tbody tr:hover td { background: #f9f9f5; }
           <th style="text-align:center">Stock CTW</th>
           <th style="text-align:center">Stock BH</th>
           <th onclick="sortBy('Latest Stock Update Date')">Stock Updated</th>
-          <th onclick="sortBy('New Incoming Stock Date')">Incoming</th>
+          <th onclick="sortBy('Bean in Stock (KG)')">Bean in Stock (KG)</th>
+          <th onclick="sortBy('New Incoming Stock Date')">Refill Date</th>
           <th onclick="sortBy('Roaster')">Roaster</th>
           <th onclick="sortBy('Roasting Level')">Roast</th>
           <th onclick="sortBy('Elevation')">Elevation</th>
@@ -867,7 +868,7 @@ tbody tr:hover td { background: #f9f9f5; }
           <th style="width:64px"></th>
         </tr></thead>
         <tbody id="atb">
-          <tr class="ph"><td colspan="25"><span class="spin"></span>Loading from Google Sheets…</td></tr>
+          <tr class="ph"><td colspan="26"><span class="spin"></span>Loading from Google Sheets…</td></tr>
         </tbody>
       </table>
     </div></div>
@@ -953,7 +954,8 @@ tbody tr:hover td { background: #f9f9f5; }
           </select>
         </div>
         <div class="fi"><label>Stock Updated Date</label><input id="f_sd" type="date"></div>
-        <div class="fi"><label>New Incoming Date</label><input id="f_id" type="date"></div>
+        <div class="fi"><label>Bean in Stock (KG)</label><input id="f_bkg" type="number" placeholder="0"></div>
+        <div class="fi"><label>New Refill Date</label><input id="f_id" type="date"></div>
         <div class="fi"><label>Stock HQ</label><input id="f_hq" type="number" placeholder="0"></div>
         <div class="fi"><label>Stock CTW</label><input id="f_cw" type="number" placeholder="0"></div>
         <div class="fi"><label>Stock BH</label><input id="f_kb" type="number" placeholder="0"></div>
@@ -1102,7 +1104,7 @@ const FM = {
   f_st:'Status',f_cd:'Item Code',f_nm:'Item Name',f_pi:'Picture',
   f_pk:'Packing Type',f_cl:'Collaboration Type',f_tt:'Taste Type',
   f_pr:'Sales Price',f_sp:'Stock Prediction',f_hq:'Stock HQ',
-  f_cw:'Stock CTW',f_kb:'Stock K.Boy',f_sd:'Latest Stock Update Date',
+  f_cw:'Stock CTW',f_kb:'Stock K.Boy',f_sd:'Latest Stock Update Date',f_bkg:'Bean in Stock (KG)',
   f_id:'New Incoming Stock Date',f_ro:'Roaster',f_tn:'Tasting Notes',
   f_rl:'Roasting Level',f_el:'Elevation',f_pm:'Process Method',
   f_or:'Origin',f_va:'Varieties',f_hl:'Hot Recipe Link',
@@ -1289,11 +1291,11 @@ function applyAdminUI(){
 function loadSheet(silent){
   if(!silent){
     setSyncStatus('loading','Loading…');
-    setTb(`<tr class="ph"><td colspan="25"><span class="spin"></span>Loading from Google Sheets…</td></tr>`);
+    setTb(`<tr class="ph"><td colspan="26"><span class="spin"></span>Loading from Google Sheets…</td></tr>`);
   }
   if(!SCRIPT_URL){
     setSyncStatus('err','No URL set');
-    setTb(`<tr class="ph"><td colspan="25">กรุณาตั้งค่า Apps Script URL ใน Settings ก่อนครับ</td></tr>`);
+    setTb(`<tr class="ph"><td colspan="26">กรุณาตั้งค่า Apps Script URL ใน Settings ก่อนครับ</td></tr>`);
     return;
   }
   const cb = '_cb' + Date.now();
@@ -1309,7 +1311,7 @@ function loadSheet(silent){
       if(!silent) toast('Loaded ' + all.length + ' beans', 'success');
     } else {
       setSyncStatus('err','Error');
-      setTb(`<tr class="ph"><td colspan="25">❌ ${res.message||'โหลดไม่สำเร็จ'}</td></tr>`);
+      setTb(`<tr class="ph"><td colspan="26">❌ ${res.message||'โหลดไม่สำเร็จ'}</td></tr>`);
       if(!silent) toast(res.message || 'Load failed', 'error');
     }
   };
@@ -1320,7 +1322,7 @@ function loadSheet(silent){
     document.getElementById('_loadScript')?.remove();
     delete window[cb];
     setSyncStatus('err','Connection failed');
-    setTb(`<tr class="ph"><td colspan="25">❌ เชื่อมต่อไม่ได้ — ตรวจสอบ Apps Script URL</td></tr>`);
+    setTb(`<tr class="ph"><td colspan="26">❌ เชื่อมต่อไม่ได้ — ตรวจสอบ Apps Script URL</td></tr>`);
     if(!silent) toast('Connection failed', 'error');
   };
   document.body.appendChild(s);
@@ -1400,7 +1402,7 @@ const CATALOG_PACKING = ['Sachet (PCS)', 'xPod (Pack)'];
 function renderCards(){
   const q=(document.getElementById('cq')?.value||'').toLowerCase();
   const visible=all.filter(r=>{
-    if(r.Status==='Cannot Refill') return false;
+    if(effectiveStatus(r)==='Cannot Refill') return false;
     if(!CATALOG_PACKING.includes(r['Packing Type'])) return false;
     if(q&&!r['Item Name']?.toLowerCase().includes(q)&&!r['Item Code']?.toLowerCase().includes(q)) return false;
     if(activeType   && r['Packing Type']!==activeType)      return false;
@@ -1443,7 +1445,7 @@ function mkCard(r){
     ? `<div class="collab-badge">${xe(r['Collaboration Type'].replace('Collaboration','Collab'))}</div>` : '<div></div>';
   const typeB = pg ? `<div class="type-badge${isXpod?' xpod':''}">${pg}</div>` : '<div></div>';
   const priceB = r['Sales Price'] ? `<div class="price-badge">฿${Number(r['Sales Price']).toLocaleString()}<span class="cur">.-</span></div>` : '';
-  const nearlyB = r.Status==='Nearly Empty' ? `<div class="nearly-strip">Nearly Empty — Limited Stock</div>` : '';
+  const nearlyB = effectiveStatus(r)==='Nearly Empty' ? `<div class="nearly-strip">Nearly Empty — Limited Stock</div>` : '';
 
   // notes
   const notes = (r['Tasting Notes']||'').split(/[,\/]/).map(n=>n.trim()).filter(Boolean).slice(0,4);
@@ -1532,7 +1534,7 @@ function applyFilter(){
 function sortBy(col){ if(sC===col)sA=!sA; else{sC=col;sA=true;} applyFilter(); }
 
 function renderTable(){
-  if(!shown.length){ setTb(`<tr class="ph"><td colspan="25">No results</td></tr>`); return; }
+  if(!shown.length){ setTb(`<tr class="ph"><td colspan="26">No results</td></tr>`); return; }
   document.getElementById('atb').innerHTML=shown.map((r,i)=>{
     const rn=r._rowNum||(i+2);
     const imgUrl=getImageUrl(r);
@@ -1542,7 +1544,7 @@ function renderTable(){
     const notes=(r['Tasting Notes']||'').split(/[,\/]/).map(n=>n.trim()).filter(Boolean).slice(0,3).join(' / ');
     return `<tr>
       <td class="tn">${i+1}</td>
-      <td>${sBadge(r.Status)}</td>
+      <td>${sBadge(effectiveStatus(r))}</td>
       <td class="tcode">${xe(r['Item Code'])||'—'}</td>
       <td class="tname" title="${xe(r['Item Name']||'')}">${xe(r['Item Name']||'—')}</td>
       <td>${thumbHtml}</td>
@@ -1550,11 +1552,12 @@ function renderTable(){
       <td>${cBadge(r['Collaboration Type'])}</td>
       <td class="tdim">${r['Taste Type']||'—'}</td>
       <td class="tprice">${r['Sales Price']?'฿'+Number(r['Sales Price']).toLocaleString():'—'}</td>
-      <td style="text-align:center">${stockCell(r['Stock HQ'])}</td>
-      <td style="text-align:center">${stockCell(r['Stock CTW'])}</td>
-      <td style="text-align:center">${stockCell(r['Stock K.Boy'])}</td>
-      <td class="tdim" style="font-size:11px">${fmtDate(r['Latest Stock Update Date'])}</td>
-      <td class="tdim" style="font-size:11px">${fmtDate(r['New Incoming Stock Date'])}</td>
+      <td style="text-align:center">${stockCell(r['Stock HQ'],  rn,'Stock HQ')}</td>
+      <td style="text-align:center">${stockCell(r['Stock CTW'], rn,'Stock CTW')}</td>
+      <td style="text-align:center">${stockCell(r['Stock K.Boy'],rn,'Stock K.Boy')}</td>
+      <td>${dateCell(r['Latest Stock Update Date'], rn, 'Latest Stock Update Date')}</td>
+      <td style="text-align:center">${stockCell(r['Bean in Stock (KG)'], rn, 'Bean in Stock (KG)')}</td>
+      <td>${dateCell(r['New Incoming Stock Date'], rn, 'New Incoming Stock Date')}</td>
       <td class="tdim">${r.Roaster||'—'}</td>
       <td class="tdim">${r['Roasting Level']||'—'}</td>
       <td class="tdim">${r['Elevation']||'—'}</td>
@@ -1578,9 +1581,18 @@ function renderTable(){
   }).join('');
 }
 
+// Compute effective status — override to Nearly Empty if total stock < 10
+function effectiveStatus(r){
+  if(r.Status === 'Cannot Refill') return 'Cannot Refill';
+  const total = (parseInt(r['Stock HQ'])||0) + (parseInt(r['Stock CTW'])||0) + (parseInt(r['Stock K.Boy'])||0);
+  const hasStock = r['Stock HQ']||r['Stock CTW']||r['Stock K.Boy']; // only apply if any stock entered
+  if(hasStock && total < 10) return 'Nearly Empty';
+  return r.Status || '—';
+}
+
 function sBadge(s){
   if(s==='Active')       return `<span class="b ba">Active</span>`;
-  if(s==='Nearly Empty') return `<span class="b bn">Nearly Empty</span>`;
+  if(s==='Nearly Empty') return `<span class="b bn">⚠ Nearly Empty</span>`;
   if(s==='Cannot Refill')return `<span class="b bc">Cannot Refill</span>`;
   return `<span class="tdim">${s||'—'}</span>`;
 }
@@ -1598,9 +1610,9 @@ function mkRLinks(r){
 
 function updateStats(){
   document.getElementById('sT').textContent  = all.length;
-  document.getElementById('sA').textContent  = all.filter(r=>r.Status==='Active').length;
-  document.getElementById('sN').textContent  = all.filter(r=>r.Status==='Nearly Empty').length;
-  document.getElementById('sC').textContent  = all.filter(r=>r.Status==='Cannot Refill').length;
+  document.getElementById('sA').textContent  = all.filter(r=>effectiveStatus(r)==='Active').length;
+  document.getElementById('sN').textContent  = all.filter(r=>effectiveStatus(r)==='Nearly Empty').length;
+  document.getElementById('sC').textContent  = all.filter(r=>effectiveStatus(r)==='Cannot Refill').length;
   document.getElementById('sX').textContent  = all.filter(r=>r['Collaboration Type']?.startsWith('XB Bean')).length;
   document.getElementById('sCo').textContent = all.filter(r=>r['Collaboration Type']?.startsWith('Collaboration')).length;
 }
@@ -1664,15 +1676,135 @@ function doDel(){
 
 // ── UTILS ──
 // ── Stock cell ──
-function stockCell(val){
-  if(!val || val.trim()==='' || val==='0') return '<span style="color:var(--lighter)">—</span>';
+function stockCell(val, rn, field){
   const n = parseInt(val);
-  if(isNaN(n)) return `<span style="color:var(--lighter)">${val}</span>`;
-  // Color: low=red, mid=orange, high=green
-  const color = n <= 5  ? 'var(--red)'
-              : n <= 15 ? 'var(--orange)'
-              : 'var(--green2)';
-  return `<span style="font-weight:600;font-size:13px;color:${color}">${n}</span>`;
+  const color = isNaN(n)||n===0 ? 'var(--lighter)'
+              : n <= 5          ? 'var(--red)'
+              : n <= 15         ? 'var(--orange)'
+                                : 'var(--green2)';
+  const display = isNaN(n)||n===0 ? '—' : n;
+  return `<span
+    class="stock-editable"
+    data-rn="${rn}"
+    data-field="${field}"
+    data-val="${isNaN(n)||n===0?'':n}"
+    onclick="editStockCell(this)"
+    title="Click to edit"
+    style="font-weight:600;font-size:13px;color:${color};cursor:pointer;padding:2px 6px;border-radius:4px;"
+  >${display}</span>`;
+}
+
+function editStockCell(el){
+  if(!SCRIPT_URL){ toast('Set Apps Script URL first','error'); return; }
+  const rn    = parseInt(el.dataset.rn);
+  const field = el.dataset.field;
+  const cur   = el.dataset.val;
+
+  // Replace span with input
+  const input = document.createElement('input');
+  input.type='number'; input.value=cur; input.min=0;
+  input.style.cssText='width:54px;text-align:center;font-size:13px;font-weight:600;font-family:inherit;border:1.5px solid var(--accent);border-radius:5px;padding:2px 4px;outline:none;background:var(--white);color:var(--dark)';
+  el.replaceWith(input);
+  input.focus(); input.select();
+
+  function commit(){
+    const newVal = input.value.trim();
+    const row = all.find(r=>r._rowNum===rn);
+    if(!row){ input.replaceWith(el); return; }
+    if(newVal === cur){ input.replaceWith(el); return; } // no change
+
+    // Optimistic update
+    row[field] = newVal;
+    // Re-render just this cell
+    const td = input.parentElement;
+    if(td) td.innerHTML = stockCell(newVal, rn, field);
+
+    // Save to Apps Script — send full row with updated field
+    const data = {};
+    Object.entries(FM).forEach(([id,col])=>{ data[col]=row[col]||''; });
+    data[field] = newVal;
+    const cb='_sc'+Date.now();
+    window[cb]=function(res){
+      cln(cb,'_scScript');
+      if(res.status==='ok'){
+        updateStats();
+        applyFilter();
+      } else {
+        toast('Save failed: '+res.message,'error');
+        row[field]=cur; // rollback
+        if(td) td.innerHTML=stockCell(cur,rn,field);
+      }
+    };
+    const p=new URLSearchParams({action:'update',sheet:TAB_NAME,callback:cb,data:JSON.stringify(data),row:rn});
+    inj('_scScript', SCRIPT_URL+'?'+p);
+  }
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); input.blur(); }
+    if(e.key==='Escape'){ input.removeEventListener('blur',commit); input.replaceWith(el); }
+  });
+}
+
+function dateCell(val, rn, field){
+  const display = fmtDate(val) || '—';
+  const iso = toISODate(val);
+  return `<span
+    class="date-editable"
+    data-rn="${rn}"
+    data-field="${field}"
+    data-val="${iso}"
+    onclick="editDateCell(this)"
+    title="Click to edit date"
+    style="font-size:11px;color:var(--mid);cursor:pointer;padding:2px 6px;border-radius:4px;white-space:nowrap;"
+  >${display}</span>`;
+}
+
+function toISODate(raw){
+  if(!raw||raw.trim()==='') return '';
+  const d = new Date(raw);
+  if(!isNaN(d.getTime())) return d.toISOString().split('T')[0];
+  return '';
+}
+
+function editDateCell(el){
+  if(!SCRIPT_URL){ toast('Set Apps Script URL first','error'); return; }
+  const rn    = parseInt(el.dataset.rn);
+  const field = el.dataset.field;
+  const cur   = el.dataset.val;
+
+  const input = document.createElement('input');
+  input.type='date'; input.value=cur;
+  input.style.cssText='font-size:12px;font-family:inherit;border:1.5px solid var(--accent);border-radius:5px;padding:3px 6px;outline:none;background:var(--white);color:var(--dark);cursor:pointer;';
+  el.replaceWith(input);
+  input.focus(); input.showPicker?.();
+
+  function commit(){
+    const newVal = input.value;
+    const row = all.find(r=>r._rowNum===rn);
+    if(!row){ input.replaceWith(el); return; }
+    if(newVal === cur){ input.replaceWith(el); return; }
+
+    row[field] = newVal;
+    const td = input.parentElement;
+    if(td) td.innerHTML = dateCell(newVal, rn, field);
+
+    const data = {};
+    Object.entries(FM).forEach(([id,col])=>{ data[col]=row[col]||''; });
+    data[field] = newVal;
+    const cb='_dc'+Date.now();
+    window[cb]=function(res){
+      cln(cb,'_dcScript');
+      if(res.status!=='ok'){ toast('Save failed','error'); row[field]=cur; if(td) td.innerHTML=dateCell(cur,rn,field); }
+    };
+    inj('_dcScript', SCRIPT_URL+'?'+new URLSearchParams({action:'update',sheet:TAB_NAME,callback:cb,data:JSON.stringify(data),row:rn}));
+  }
+
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); input.blur(); }
+    if(e.key==='Escape'){ input.removeEventListener('blur',commit); input.replaceWith(el); }
+  });
 }
 
 // ── Date formatter ──
