@@ -431,7 +431,33 @@ select.cat-dd.on { border-color: var(--dark); color: var(--dark); background: va
   margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
 }
 .admin-title { font-size: 18px; font-weight: 600; letter-spacing: -.2px; }
-.admin-actions { display: flex; gap: 8px; }
+.admin-actions { display: flex; gap: 8px; align-items: center; }
+
+/* View toggle */
+.view-toggle { display: flex; border: 1px solid var(--border); border-radius: 7px; overflow: hidden; background: var(--white); }
+.vtab { padding: 6px 12px; font-size: 11px; font-weight: 500; letter-spacing: .3px; cursor: pointer; border: none; background: transparent; color: var(--light); font-family: inherit; transition: all .15s; }
+.vtab.active { background: var(--dark); color: var(--white); }
+.vtab:hover:not(.active) { color: var(--dark2); }
+
+/* Full-view only columns */
+.col-full { }
+table.quick-view .col-full { display: none; }
+
+/* Highlight rows */
+tr.row-nearly > td { background: rgba(255,149,0,.04) !important; }
+tr.row-nearly:hover > td { background: rgba(255,149,0,.08) !important; }
+tr.row-cannot > td { background: rgba(255,59,48,.04) !important; }
+tr.row-cannot:hover > td { background: rgba(255,59,48,.07) !important; }
+tr.row-refill-soon > td { background: rgba(0,113,227,.04) !important; }
+
+/* Quick Status Edit dropdown */
+.status-select {
+  appearance: none; -webkit-appearance: none;
+  border: none; background: transparent;
+  font-size: 11px; font-weight: 500; font-family: inherit;
+  cursor: pointer; padding: 0; color: inherit;
+  width: 100%; outline: none;
+}
 
 /* warning banner */
 .warn-banner {
@@ -506,6 +532,38 @@ td {
 tr:last-child td { border-bottom: none; }
 tbody tr:hover td { background: #f9f9f5; }
 .tn { color: var(--lighter); font-size: 10px; text-align: center; }
+
+/* ── Group header row ── */
+.grp-row { background: #f4f4f0 !important; cursor: pointer; user-select: none; }
+.grp-row:hover td { background: #eeeee9 !important; }
+.grp-row td { border-bottom: 1px solid var(--border); padding: 10px 13px; }
+.grp-name {
+  font-size: 13px; font-weight: 600; color: var(--dark);
+  display: flex; align-items: center; gap: 8px;
+}
+.grp-chevron {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 4px;
+  background: var(--border); color: var(--mid); flex-shrink: 0;
+  transition: transform .2s;
+}
+.grp-chevron.open { transform: rotate(90deg); }
+.grp-meta { font-size: 11px; color: var(--light); font-weight: 400; margin-left: 4px; }
+.grp-bkg {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: var(--dark2);
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 6px; padding: 3px 10px; margin-left: 8px;
+}
+.grp-bkg-input {
+  width: 60px; font-size: 12px; font-weight: 600;
+  border: none; outline: none; background: transparent;
+  color: var(--dark2); font-family: inherit; text-align: center;
+}
+/* child rows */
+.child-row td:first-child { padding-left: 32px; }
+.child-row { transition: opacity .15s; }
+.child-row.hidden { display: none; }
 .tcode { color: #0071e3; font-size: 11px; }
 .tname { color: var(--dark); font-weight: 500; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
 .tdim { color: var(--light); }
@@ -584,6 +642,197 @@ tbody tr:hover td { background: #f9f9f5; }
 .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--dark); border-radius: 50%; animation: sp .7s linear infinite; vertical-align: middle; margin-right: 6px; }
 @keyframes sp { to { transform: rotate(360deg); } }
 ::-webkit-scrollbar { width: 4px; height: 4px; }
+/* ── ANALYTICS MODAL ── */
+.analytics-card {
+  background: var(--white); border: 1px solid var(--border2);
+  border-radius: 10px; padding: 18px 20px;
+}
+.analytics-card-title {
+  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--lighter); font-weight: 600; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.analytics-card-title::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
+.burn-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border2);
+}
+.burn-row:last-child { border-bottom: none; }
+.burn-rank {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--bg); color: var(--light);
+  font-size: 11px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.burn-rank.gold { background: #fdf6e3; color: #906200; }
+.burn-rank.silver { background: #f4f4f6; color: #666; }
+.burn-rank.bronze { background: #fdf0e8; color: #8b4513; }
+.burn-name { flex: 1; }
+.burn-name .bn { font-size: 13px; font-weight: 500; color: var(--dark); }
+.burn-name .bs { font-size: 11px; color: var(--lighter); }
+.burn-bar-wrap { width: 120px; }
+.burn-bar-track {
+  height: 6px; border-radius: 3px;
+  background: var(--bg); overflow: hidden;
+}
+.burn-bar-fill {
+  height: 100%; border-radius: 3px;
+  background: var(--green2);
+  transition: width .5s cubic-bezier(.2,.8,.2,1);
+}
+.burn-bar-fill.fast { background: var(--red); }
+.burn-bar-fill.mid { background: var(--orange); }
+.burn-stat { text-align: right; min-width: 60px; }
+.burn-stat .bv { font-size: 13px; font-weight: 600; color: var(--dark); }
+.burn-stat .bl { font-size: 10px; color: var(--lighter); }
+.predict-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 0; border-bottom: 1px solid var(--border2);
+}
+.predict-row:last-child { border-bottom: none; }
+.predict-status {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 500;
+}
+.ps-urgent { background: var(--red-bg); color: var(--red); }
+.ps-soon   { background: var(--orange-bg); color: var(--orange); }
+.ps-ok     { background: var(--green-bg); color: var(--green2); }
+.ps-na     { background: var(--bg); color: var(--lighter); }
+
+/* ── BEAN DETAIL MODAL ── */
+.detail-ov {
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+}
+.detail-ov.open { opacity: 1; pointer-events: all; }
+.detail-modal {
+  background: var(--white);
+  border-radius: 20px;
+  width: 860px; max-width: 96vw;
+  max-height: 92vh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+  box-shadow: 0 32px 80px rgba(0,0,0,.2);
+  transform: scale(.96) translateY(12px);
+  transition: transform .25s cubic-bezier(.2,.8,.2,1);
+}
+.detail-ov.open .detail-modal { transform: scale(1) translateY(0); }
+.detail-img-wrap {
+  width: 100%; height: 340px;
+  background: var(--bg);
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.detail-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  object-position: center;
+  padding: 20px;
+}
+.detail-img-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 80px; opacity: .15;
+}
+.detail-img-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
+  background: linear-gradient(to bottom, transparent, rgba(0,0,0,.45));
+  pointer-events: none;
+}
+.detail-img-bottom {
+  position: absolute; bottom: 20px; left: 28px; right: 80px;
+}
+.detail-img-name {
+  font-family: 'Quincy CF','Libre Baskerville',Georgia,serif;
+  font-size: 32px; font-weight: 400; color: #fff;
+  line-height: 1.15; letter-spacing: -.3px;
+  text-shadow: 0 2px 12px rgba(0,0,0,.3);
+}
+.detail-img-roaster {
+  font-size: 13px; color: rgba(255,255,255,.75);
+  margin-top: 4px; font-weight: 500; letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.detail-close {
+  position: absolute; top: 16px; right: 16px; z-index: 10;
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(0,0,0,.35); border: none; color: #fff;
+  font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px); transition: background .15s;
+}
+.detail-close:hover { background: rgba(0,0,0,.55); }
+.detail-body {
+  padding: 28px 32px 32px;
+  overflow-y: auto; flex: 1;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.detail-left { display: flex; flex-direction: column; gap: 20px; }
+.detail-right { display: flex; flex-direction: column; gap: 20px; }
+.detail-section-title {
+  font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--lighter); font-weight: 600;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.detail-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
+.detail-spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
+.detail-spec .dl { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--lighter); }
+.detail-spec .dv { font-size: 14px; color: var(--dark2); margin-top: 3px; font-weight: 400; }
+.detail-notes-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
+.detail-note {
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+  background: var(--green-bg); color: var(--green2);
+}
+.detail-desc {
+  font-size: 14px; line-height: 1.8; color: var(--text2);
+  white-space: pre-wrap;
+  font-family: 'Sukhumvit Set','Noto Sans Thai','Inter Tight',sans-serif;
+}
+.detail-price-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--bg); border-radius: 10px;
+  margin-bottom: 4px;
+}
+.detail-price {
+  font-family: 'Quincy CF','Libre Baskerville',Georgia,serif;
+  font-size: 28px; color: var(--dark); letter-spacing: -.3px;
+}
+.detail-price .cur { font-size: 14px; color: var(--light); font-family: 'Inter Tight',sans-serif; }
+.detail-buy-btns { display: flex; gap: 8px; }
+.detail-buy-btn {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 11px 16px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; font-family: inherit;
+  text-decoration: none; transition: all .15s; border: none; cursor: pointer;
+}
+.detail-buy-shopee { background: #ee4d2d; color: #fff; }
+.detail-buy-shopee:hover { background: #d43d1f; }
+.detail-buy-line { background: #06c755; color: #fff; }
+.detail-buy-line:hover { background: #05a847; }
+.detail-recipe-btns { display: flex; gap: 8px; }
+.detail-recipe-btn {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  text-decoration: none; border: 1px solid var(--border); color: var(--mid);
+  background: var(--white); transition: all .15s; font-family: inherit;
+}
+.detail-recipe-btn:hover { border-color: var(--dark); color: var(--dark); }
+
+@media(max-width:640px){
+  .detail-body { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
+  .detail-img-wrap { aspect-ratio: 4/3; }
+  .detail-img-name { font-size: 24px; }
+}
+
 ::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 2px; }
 
 /* ══════════════════════════════════════
@@ -782,6 +1031,18 @@ tbody tr:hover td { background: #f9f9f5; }
         <div style="font-size:11px;color:var(--light);margin-top:2px">Manage bean listings · Real-time sync with Google Sheets</div>
       </div>
       <div class="admin-actions">
+        <div class="view-toggle">
+          <button class="vtab active" id="vtQuick" onclick="setView('quick')">Quick</button>
+          <button class="vtab" id="vtFull" onclick="setView('full')">Full</button>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="openAnalytics()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Analytics
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="openLog()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Stock Log
+        </button>
         <button class="btn btn-outline btn-sm" onclick="loadSheet()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
           Reload
@@ -854,17 +1115,17 @@ tbody tr:hover td { background: #f9f9f5; }
           <th onclick="sortBy('Latest Stock Update Date')">Stock Updated</th>
           <th onclick="sortBy('Bean in Stock (KG)')">Bean in Stock (KG)</th>
           <th onclick="sortBy('New Incoming Stock Date')">Refill Date</th>
-          <th onclick="sortBy('Roaster')">Roaster</th>
-          <th onclick="sortBy('Roasting Level')">Roast</th>
-          <th onclick="sortBy('Elevation')">Elevation</th>
-          <th onclick="sortBy('Origin')">Origin</th>
-          <th onclick="sortBy('Farm')">Farm</th>
-          <th onclick="sortBy('Process Method')">Process</th>
-          <th>Tasting Notes</th>
-          <th onclick="sortBy('Bean Description')">Description</th>
-          <th>Recipe</th>
-          <th>Shopee</th>
-          <th>Line</th>
+          <th onclick="sortBy('Roaster')" class="col-full">Roaster</th>
+          <th onclick="sortBy('Roasting Level')" class="col-full">Roast</th>
+          <th onclick="sortBy('Elevation')" class="col-full">Elevation</th>
+          <th onclick="sortBy('Origin')" class="col-full">Origin</th>
+          <th onclick="sortBy('Farm')" class="col-full">Farm</th>
+          <th onclick="sortBy('Process Method')" class="col-full">Process</th>
+          <th class="col-full">Tasting Notes</th>
+          <th onclick="sortBy('Bean Description')" class="col-full">Description</th>
+          <th class="col-full">Recipe</th>
+          <th class="col-full">Shopee</th>
+          <th class="col-full">Line</th>
           <th style="width:64px"></th>
         </tr></thead>
         <tbody id="atb">
@@ -1084,6 +1345,122 @@ tbody tr:hover td { background: #f9f9f5; }
   </div>
 </div>
 
+
+
+
+<!-- ══ ANALYTICS MODAL ══ -->
+<div class="ov" id="analyticsOv">
+  <div class="modal" style="width:780px;max-height:88vh">
+    <div class="mh">
+      <div class="mt">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Analytics & Insights
+      </div>
+      <button class="mx" onclick="closeAnalytics()">✕</button>
+    </div>
+    <div class="mb" style="display:flex;flex-direction:column;gap:16px;padding:20px 22px">
+
+      <!-- Summary row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px" id="analyticsStats"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <!-- Burn Rate / Best Seller -->
+        <div class="analytics-card">
+          <div class="analytics-card-title">🔥 Best Seller (by burn rate)</div>
+          <div id="burnList"><div style="text-align:center;padding:20px;color:var(--lighter)">Loading…</div></div>
+        </div>
+
+        <!-- Reorder Prediction -->
+        <div class="analytics-card">
+          <div class="analytics-card-title">📅 Reorder Prediction</div>
+          <div id="predictList"><div style="text-align:center;padding:20px;color:var(--lighter)">Loading…</div></div>
+        </div>
+      </div>
+
+      <!-- Monthly Sales manual input -->
+      <div class="analytics-card">
+        <div class="analytics-card-title">📦 Monthly Sales (manual input)</div>
+        <div style="font-size:12px;color:var(--lighter);margin-bottom:12px">กรอกยอดขายรายเดือนเพื่อให้ระบบคำนวณ Burn Rate ได้แม่นยำขึ้น</div>
+        <div id="salesInputGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px"></div>
+      </div>
+
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeAnalytics()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BEAN DETAIL MODAL ══ -->
+<div class="detail-ov" id="detailOv">
+  <div class="detail-modal" id="detailModal">
+    <!-- Image / Hero -->
+    <div class="detail-img-wrap" id="detailImgWrap">
+      <div class="detail-img-placeholder" id="detailImgPh">☕</div>
+      <div class="detail-img-overlay" id="detailImgOverlay" style="display:none"></div>
+      <div class="detail-img-bottom" id="detailImgBottom" style="display:none">
+        <div class="detail-img-name" id="detailHeroName"></div>
+        <div class="detail-img-roaster" id="detailHeroRoaster"></div>
+      </div>
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+    </div>
+    <!-- Body -->
+    <div class="detail-body">
+      <div class="detail-left">
+        <!-- Price + Buy -->
+        <div id="detailPriceSection"></div>
+        <!-- Tasting Notes -->
+        <div id="detailNotesSection"></div>
+        <!-- Coffee Specs -->
+        <div id="detailSpecSection"></div>
+      </div>
+      <div class="detail-right">
+        <!-- Description -->
+        <div id="detailDescSection"></div>
+        <!-- Recipes -->
+        <div id="detailRecipeSection"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STOCK LOG MODAL ══ -->
+<div class="ov" id="logOv">
+  <div class="modal" style="width:700px">
+    <div class="mh">
+      <div class="mt">📋 Stock History Log</div>
+      <button class="mx" onclick="closeLog()">✕</button>
+    </div>
+    <div class="mb" style="padding:0">
+      <div style="padding:14px 22px;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px">
+        <input id="logSearch" placeholder="Search item name or field…"
+          style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:13px;font-family:inherit;outline:none;color:var(--dark)"
+          oninput="filterLog()">
+        <span id="logCount" style="font-size:12px;color:var(--lighter)"></span>
+      </div>
+      <div style="overflow:auto;max-height:60vh">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead>
+            <tr style="background:#f4f4f0;position:sticky;top:0">
+              <th style="padding:9px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">Time</th>
+              <th style="padding:9px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">Item</th>
+              <th style="padding:9px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">Field</th>
+              <th style="padding:9px 14px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">From</th>
+              <th style="padding:9px 14px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">To</th>
+            </tr>
+          </thead>
+          <tbody id="logBody">
+            <tr><td colspan="5" style="padding:40px;text-align:center;color:var(--lighter)"><span class="spin"></span>Loading log…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closeLog()">Close</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"><span class="ti" id="ti">✓</span><span id="tm"></span></div>
 
 <script>
@@ -1147,7 +1524,8 @@ function goPage(p) {
     document.getElementById('tab'+cap(id)).classList.toggle('active', p===id);
   });
   if (p==='cat') renderCards();
-  if (p==='admin') applyFilter();
+  if (p==='admin'){ applyFilter(); updateStickyBar(); }
+  if (p==='cat'){ const b=document.getElementById('stickyBar'); if(b) b.style.display='none'; }
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
@@ -1276,11 +1654,375 @@ function applyAdminUI(){
 // ════════════════════════════════════
 //  INIT
 // ════════════════════════════════════
+
+
+// ── STOCK LOG VIEWER ──
+let logData = [];
+function openLog(){
+  document.getElementById('logOv').classList.add('open');
+  loadLog();
+}
+function closeLog(){ document.getElementById('logOv').classList.remove('open'); }
+function loadLog(){
+  if(!SCRIPT_URL){ document.getElementById('logBody').innerHTML='<tr><td colspan="5" style="padding:30px;text-align:center;color:var(--lighter)">Set Apps Script URL first</td></tr>'; return; }
+  document.getElementById('logBody').innerHTML='<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--lighter)"><span class="spin"></span>Loading…</td></tr>';
+  const cb='_gl'+Date.now();
+  window[cb]=function(res){
+    cln(cb,'_glScript');
+    if(res.status==='ok'){ logData=res.data||[]; filterLog(); }
+    else document.getElementById('logBody').innerHTML='<tr><td colspan="5" style="padding:30px;text-align:center;color:var(--red)">Failed to load log</td></tr>';
+  };
+  inj('_glScript', SCRIPT_URL+'?action=getLog&callback='+cb);
+}
+function filterLog(){
+  const q=(document.getElementById('logSearch')?.value||'').toLowerCase();
+  const filtered = logData.filter(r=>
+    !q || r.itemName.toLowerCase().includes(q) || r.field.toLowerCase().includes(q) || r.itemCode.toLowerCase().includes(q)
+  );
+  document.getElementById('logCount').textContent=filtered.length+' entries';
+  if(!filtered.length){
+    document.getElementById('logBody').innerHTML='<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--lighter)">No entries found</td></tr>';
+    return;
+  }
+  const fieldColor = f => f==='Status'?'#0071e3':f.includes('Stock')||f.includes('KG')?'var(--green2)':'var(--mid)';
+  document.getElementById('logBody').innerHTML = filtered.map(r=>{
+    const diff = parseFloat(r.to) - parseFloat(r.from);
+    const arrow = !isNaN(diff) ? (diff>0?'<span style="color:var(--green2)">▲</span>':diff<0?'<span style="color:var(--red)">▼</span>':'') : '';
+    return `<tr style="border-bottom:1px solid var(--border2)">
+      <td style="padding:9px 14px;color:var(--lighter);font-size:11px;white-space:nowrap">${xe(r.timestamp)}</td>
+      <td style="padding:9px 14px">
+        <div style="font-weight:500;color:var(--dark);font-size:12px">${xe(r.itemName)}</div>
+        ${r.itemCode?`<div style="font-size:10px;color:var(--accent)">${xe(r.itemCode)}</div>`:''}
+      </td>
+      <td style="padding:9px 14px;font-size:11px;font-weight:500;color:${fieldColor(r.field)}">${xe(r.field)}</td>
+      <td style="padding:9px 14px;text-align:center;color:var(--light);font-size:12px">${xe(r.from)||'—'}</td>
+      <td style="padding:9px 14px;text-align:center;font-weight:600;color:var(--dark);font-size:12px">${arrow} ${xe(r.to)||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+
+// ── BEAN DETAIL MODAL ──
+function openBeanDetail(rowNum){
+  const r = all.find(x=>x._rowNum===rowNum);
+  if(!r) return;
+  const imgUrl = getImageUrl(r);
+
+  // Hero image
+  const wrap = document.getElementById('detailImgWrap');
+  const ph   = document.getElementById('detailImgPh');
+  const ov   = document.getElementById('detailImgOverlay');
+  const bot  = document.getElementById('detailImgBottom');
+  // Remove old img if any
+  wrap.querySelectorAll('img').forEach(el=>el.remove());
+  if(imgUrl){
+    const img = document.createElement('img');
+    img.src = imgUrl;
+    img.onerror = ()=>{ img.remove(); ph.style.display='flex'; };
+    wrap.insertBefore(img, ph);
+    ph.style.display='none';
+  } else {
+    ph.style.display='flex';
+  }
+  // Always hide overlay/bottom text — name shown in body
+  ov.style.display='none'; bot.style.display='none';
+
+  // Price + buy
+  const hasBuy = r['Shopee Link']||r['Line Link'];
+  document.getElementById('detailPriceSection').innerHTML = `
+    <div style="margin-bottom:12px">
+      <div style="font-family:'Quincy CF','Libre Baskerville',Georgia,serif;font-size:26px;font-weight:400;letter-spacing:-.3px;color:var(--dark);line-height:1.1">${xe(r['Item Name']||'')}</div>
+      ${r.Roaster?`<div style="font-size:11px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:#9a7c5a;margin-top:5px">Roasted by ${xe(r.Roaster)}</div>`:''}
+    </div>
+    <div class="detail-price-row">
+      <div class="detail-price">${r['Sales Price']?'&#3647;'+Number(r['Sales Price']).toLocaleString()+'<span class="cur">.-</span>':'—'}</div>
+      <div style="font-size:11px;color:var(--lighter);text-transform:uppercase;letter-spacing:.5px">${xe(r['Packing Type']||'')}</div>
+    </div>
+    ${hasBuy?`<div class="detail-buy-btns">
+      ${r['Shopee Link']?`<a href="${xe(r['Shopee Link'])}" target="_blank" class="detail-buy-btn detail-buy-shopee">&#128722; Buy on Shopee</a>`:''}
+      ${r['Line Link']?`<a href="${xe(r['Line Link'])}" target="_blank" class="detail-buy-btn detail-buy-line">&#128172; Buy on Line</a>`:''}
+    </div>`:''}`;
+
+  // Tasting Notes
+  const notes=(r['Tasting Notes']||'').split(/[,\/]/).map(n=>n.trim()).filter(Boolean);
+  document.getElementById('detailNotesSection').innerHTML = notes.length ? `
+    <div>
+      <div class="detail-section-title">Tasting Notes</div>
+      <div class="detail-notes-wrap">${notes.map(n=>`<span class="detail-note">${xe(n)}</span>`).join('')}</div>
+    </div>` : '';
+
+  // Coffee Specs
+  const specs = [
+    {l:'Origin',     v:r.Origin},
+    {l:'Process',    v:r['Process Method']},
+    {l:'Roast Level',v:r['Roasting Level']},
+    {l:'Elevation',  v:r['Elevation']?r['Elevation']+' masl':''},
+    {l:'Varieties',  v:r.Varieties||r['Varieties']},
+    {l:'Farm',       v:r.Farm},
+    {l:'Roaster',    v:r.Roaster},
+    {l:'Collab',     v:r['Collaboration Type']},
+  ].filter(s=>s.v&&s.v.trim()&&s.v!=='-');
+
+  document.getElementById('detailSpecSection').innerHTML = specs.length ? `
+    <div>
+      <div class="detail-section-title">Coffee Details</div>
+      <div class="detail-spec-grid">
+        ${specs.map(s=>`<div class="detail-spec"><div class="dl">${s.l}</div><div class="dv">${xe(s.v)}</div></div>`).join('')}
+      </div>
+    </div>` : '';
+
+  // Description
+  document.getElementById('detailDescSection').innerHTML = r['Bean Description'] ? `
+    <div>
+      <div class="detail-section-title">About this Bean</div>
+      <div class="detail-desc">${xe(r['Bean Description'])}</div>
+    </div>` : '';
+
+  // Recipes
+  const hasRecipe = r['Hot Recipe Link']||r['Cold Recipe Link'];
+  document.getElementById('detailRecipeSection').innerHTML = hasRecipe ? `
+    <div>
+      <div class="detail-section-title">Brewing Recipes</div>
+      <div class="detail-recipe-btns">
+        ${r['Hot Recipe Link']?`<a href="${xe(r['Hot Recipe Link'])}" target="_blank" class="detail-recipe-btn">☕ Hot Recipe</a>`:''}
+        ${r['Cold Recipe Link']?`<a href="${xe(r['Cold Recipe Link'])}" target="_blank" class="detail-recipe-btn">🧊 Cold Recipe</a>`:''}
+      </div>
+    </div>` : '';
+
+  // Open
+  document.getElementById('detailOv').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeDetail(){
+  document.getElementById('detailOv').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+
+// ════════════════════════════════════
+//  ANALYTICS & INSIGHTS
+// ════════════════════════════════════
+
+// Monthly Sales stored in localStorage per bean name
+function getMonthlySales(name){ return parseFloat(localStorage.getItem('xb_ms_'+name))||0; }
+function setMonthlySales(name,val){ localStorage.setItem('xb_ms_'+name, val); }
+
+function openAnalytics(){
+  document.getElementById('analyticsOv').classList.add('open');
+  renderAnalytics();
+}
+function closeAnalytics(){ document.getElementById('analyticsOv').classList.remove('open'); }
+
+function renderAnalytics(){
+  // Group beans by name (same as admin table)
+  const groups = {};
+  const groupOrder = [];
+  all.forEach(r=>{
+    const n = r['Item Name']||'—';
+    if(!groups[n]){ groups[n]=[]; groupOrder.push(n); }
+    groups[n].push(r);
+  });
+
+  // ── Summary stats ──
+  const totalBeans  = groupOrder.length;
+  const totalStock  = all.reduce((s,r)=>(s+(parseInt(r['Stock HQ'])||0)+(parseInt(r['Stock CTW'])||0)+(parseInt(r['Stock K.Boy'])||0)),0);
+  const lowStock    = groupOrder.filter(n=>{ const rs=groups[n]; const t=rs.reduce((s,r)=>(s+(parseInt(r['Stock HQ'])||0)+(parseInt(r['Stock CTW'])||0)+(parseInt(r['Stock K.Boy'])||0)),0); return t<10 && t>0; }).length;
+  const outOfStock  = groupOrder.filter(n=>{ const rs=groups[n]; const t=rs.reduce((s,r)=>(s+(parseInt(r['Stock HQ'])||0)+(parseInt(r['Stock CTW'])||0)+(parseInt(r['Stock K.Boy'])||0)),0); return t===0; }).length;
+
+  document.getElementById('analyticsStats').innerHTML = [
+    {l:'Total Beans', v:totalBeans, c:'blue'},
+    {l:'Total Stock (units)', v:totalStock, c:''},
+    {l:'Low Stock', v:lowStock, c:'orange'},
+    {l:'Out of Stock', v:outOfStock, c:'red'},
+  ].map(s=>`<div class="stat"><div class="sv ${s.c}">${s.v}</div><div class="sl">${s.l}</div></div>`).join('');
+
+  // ── Burn Rate per bean ──
+  // Primary: use Monthly Sales if set; fallback: stock depletion from log
+  const burnRates = groupOrder.map(name=>{
+    const rows = groups[name];
+    const totalStock = rows.reduce((s,r)=>(s+(parseInt(r['Stock HQ'])||0)+(parseInt(r['Stock CTW'])||0)+(parseInt(r['Stock K.Boy'])||0)),0);
+    const bkg = parseFloat(rows[0]?.['Bean in Stock (KG)'])||0;
+    const ms  = getMonthlySales(name); // manual monthly sales
+    const burnPerDay = ms > 0 ? ms/30 : calcBurnFromLog(name);
+    const daysLeft = burnPerDay > 0 ? Math.round(totalStock / burnPerDay) : null;
+    const reorderDate = daysLeft !== null ? new Date(Date.now() + daysLeft*86400000) : null;
+    return { name, totalStock, bkg, burnPerDay, daysLeft, reorderDate, ms };
+  }).sort((a,b)=> (b.burnPerDay||0)-(a.burnPerDay||0));
+
+  const maxBurn = Math.max(...burnRates.map(b=>b.burnPerDay||0), 1);
+
+  // Burn Rate / Best Seller list
+  document.getElementById('burnList').innerHTML = burnRates.slice(0,8).map((b,i)=>{
+    const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const pct = maxBurn>0 ? Math.round((b.burnPerDay/maxBurn)*100) : 0;
+    const barClass = pct>=66?'fast':pct>=33?'mid':'';
+    const burnLabel = b.burnPerDay>0 ? `${b.burnPerDay.toFixed(1)} units/day` : b.ms>0 ? `${b.ms} units/mo` : 'No data';
+    return `<div class="burn-row">
+      <div class="burn-rank ${rankClass}">${i+1}</div>
+      <div class="burn-name">
+        <div class="bn">${xe(b.name)}</div>
+        <div class="bs">${b.totalStock} units in stock</div>
+      </div>
+      <div class="burn-bar-wrap">
+        <div class="burn-bar-track"><div class="burn-bar-fill ${barClass}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="burn-stat">
+        <div class="bv">${burnLabel}</div>
+        <div class="bl">${b.ms>0?'manual log':'est.'}</div>
+      </div>
+    </div>`;
+  }).join('') || '<div style="text-align:center;padding:20px;color:var(--lighter)">No burn rate data yet</div>';
+
+  // Reorder Prediction list
+  const sorted = [...burnRates].sort((a,b)=> (a.daysLeft??9999)-(b.daysLeft??9999));
+  document.getElementById('predictList').innerHTML = sorted.slice(0,8).map(b=>{
+    let statusHtml, dateStr;
+    if(b.totalStock===0){
+      statusHtml=`<span class="predict-status ps-urgent">🔴 Out of stock</span>`; dateStr='';
+    } else if(b.daysLeft===null){
+      statusHtml=`<span class="predict-status ps-na">No data</span>`; dateStr='';
+    } else if(b.daysLeft<=7){
+      statusHtml=`<span class="predict-status ps-urgent">⚠ ${b.daysLeft}d left</span>`;
+      dateStr=b.reorderDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    } else if(b.daysLeft<=21){
+      statusHtml=`<span class="predict-status ps-soon">${b.daysLeft}d left</span>`;
+      dateStr=b.reorderDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    } else {
+      statusHtml=`<span class="predict-status ps-ok">${b.daysLeft}d left</span>`;
+      dateStr=b.reorderDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    }
+    return `<div class="predict-row">
+      <div>
+        <div style="font-size:13px;font-weight:500;color:var(--dark)">${xe(b.name)}</div>
+        ${dateStr?`<div style="font-size:11px;color:var(--lighter)">Reorder by ~${dateStr}</div>`:''}
+      </div>
+      ${statusHtml}
+    </div>`;
+  }).join('') || '<div style="text-align:center;padding:20px;color:var(--lighter)">No prediction data</div>';
+
+  // Monthly Sales input grid
+  document.getElementById('salesInputGrid').innerHTML = groupOrder.map(name=>`
+    <div style="display:flex;flex-direction:column;gap:4px">
+      <label style="font-size:11px;color:var(--mid);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${xe(name)}">${xe(name)}</label>
+      <div style="display:flex;align-items:center;gap:6px">
+        <input type="number" min="0" placeholder="0"
+          value="${getMonthlySales(name)||''}"
+          id="ms_${xe(name).replace(/[^a-zA-Z0-9]/g,'_')}"
+          onchange="setMonthlySales('${xe(name)}',this.value);renderAnalytics();"
+          style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:13px;font-family:inherit;color:var(--dark);outline:none;width:0">
+        <span style="font-size:11px;color:var(--lighter);white-space:nowrap">units/mo</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Estimate burn rate from stock log (units decreased per day)
+function calcBurnFromLog(name){
+  // Use logData if available
+  if(!logData || !logData.length) return 0;
+  const entries = logData.filter(e=>
+    e.itemName===name && ['Stock HQ','Stock CTW','Stock K.Boy'].includes(e.field) &&
+    !isNaN(parseFloat(e.from)) && !isNaN(parseFloat(e.to))
+  );
+  if(entries.length < 2) return 0;
+  // Sum of all decreases
+  const totalDecrease = entries.reduce((s,e)=>{
+    const diff = parseFloat(e.from) - parseFloat(e.to);
+    return diff > 0 ? s+diff : s;
+  }, 0);
+  // Days between first and last entry
+  const dates = entries.map(e=>new Date(e.timestamp)).filter(d=>!isNaN(d));
+  if(dates.length < 2) return 0;
+  const minDate = new Date(Math.min(...dates));
+  const maxDate = new Date(Math.max(...dates));
+  const days = Math.max(1, (maxDate-minDate)/86400000);
+  return totalDecrease / days;
+}
+
+// ── STOCK HISTORY LOG ──
+function logStockChange(rn, field, fromVal, toVal){
+  if(!SCRIPT_URL) return;
+  const row = all.find(r=>r._rowNum===rn);
+  if(!row || fromVal === toVal) return;
+  const cb='_log'+Date.now();
+  window[cb]=function(){ cln(cb,'_logScript'); };
+  inj('_logScript', SCRIPT_URL+'?'+new URLSearchParams({
+    action:'logStock',
+    itemName: row['Item Name']||'',
+    itemCode: row['Item Code']||'',
+    field, from: fromVal||'0', to: toVal||'0',
+    callback: cb
+  }));
+}
+
+// ── 1) QUICK / FULL VIEW ──
+let currentView = 'quick';
+function setView(v){
+  currentView = v;
+  const tbl = document.querySelector('#pageAdmin table');
+  if(tbl) tbl.className = v==='quick' ? 'quick-view' : '';
+  document.getElementById('vtQuick').classList.toggle('active', v==='quick');
+  document.getElementById('vtFull').classList.toggle('active', v==='full');
+}
+
+// ── 2) QUICK STATUS EDIT ──
+const STATUS_OPTS = ['Active','Nearly Empty','Cannot Refill'];
+function quickStatusEdit(rn, cur){
+  if(!SCRIPT_URL){ toast('Set Apps Script URL first','error'); return; }
+  const row = all.find(r=>r._rowNum===rn);
+  if(!row) return;
+  const idx = STATUS_OPTS.indexOf(cur);
+  const next = STATUS_OPTS[(idx+1) % STATUS_OPTS.length];
+  row['Status'] = next;
+  logStockChange(rn, 'Status', cur, next);
+  const data = {};
+  Object.entries(FM).forEach(([id,col])=>{ data[col]=row[col]||''; });
+  data['Status'] = next;
+  const cb='_qs'+Date.now();
+  window[cb]=function(res){
+    cln(cb,'_qsScript');
+    if(res.status==='ok'){ renderTable(); applyFilter(); updateStats(); toast('Status → '+next,'success'); }
+    else { toast('Save failed','error'); row['Status']=cur; renderTable(); }
+  };
+  inj('_qsScript', SCRIPT_URL+'?'+new URLSearchParams({action:'update',sheet:TAB_NAME,callback:cb,data:JSON.stringify(data),row:rn}));
+  renderTable(); updateStats(); // optimistic
+}
+
+// ── 3) HIGHLIGHT — applied inside renderTable via row class ──
+function rowHighlightClass(r){
+  const s = effectiveStatus(r);
+  if(s==='Cannot Refill') return 'row-cannot';
+  if(s==='Nearly Empty')  return 'row-nearly';
+  // Refill date within 7 days
+  if(r['New Incoming Stock Date']){
+    const d = new Date(r['New Incoming Stock Date']);
+    const diff = (d - new Date()) / 86400000;
+    if(!isNaN(diff) && diff >= 0 && diff <= 7) return 'row-refill-soon';
+  }
+  return '';
+}
+
+// ── 4) STICKY SUMMARY ──
+function updateStickyBar(){
+  const ne  = document.getElementById('sN')?.textContent || '0';
+  const can = document.getElementById('sC')?.textContent || '0';
+  let bar = document.getElementById('stickyBar');
+  if(!bar){ bar=document.createElement('div'); bar.id='stickyBar'; bar.style.cssText='position:fixed;bottom:0;left:0;right:0;background:rgba(240,240,236,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:8px 24px;display:flex;gap:16px;align-items:center;z-index:90;font-size:12px;'; document.body.appendChild(bar); }
+  const pageAdmin = document.getElementById('pageAdmin');
+  bar.style.display = pageAdmin?.classList.contains('active') ? 'flex' : 'none';
+  bar.innerHTML = parseInt(ne)>0 || parseInt(can)>0
+    ? `<span style="font-weight:600;color:var(--mid)">Stock Alert:</span>${parseInt(ne)>0?`<span style="color:var(--orange)">⚠ ${ne} Nearly Empty</span>`:''}${parseInt(can)>0?`<span style="color:var(--red)">🔴 ${can} Cannot Refill</span>`:''}<button onclick="document.getElementById('afs').value='Nearly Empty';applyFilter()" style="border:none;background:transparent;font-size:11px;color:var(--accent);cursor:pointer;font-family:inherit;text-decoration:underline;padding:0">View</button>`
+    : `<span style="color:var(--green2)">✓ All stock levels OK</span>`;
+}
+
+
 (function init(){
   document.getElementById('cfgSid').value    = SHEET_ID;
   document.getElementById('cfgTab').value    = TAB_NAME;
   document.getElementById('cfgScript').value = SCRIPT_URL;
   applyAdminUI();
+  setView('quick');
   loadSheet();
 })();
 
@@ -1468,16 +2210,16 @@ function mkCard(r){
 
   // recipes
   const recipes = [
-    r['Hot Recipe Link'] && `<a href="${xe(r['Hot Recipe Link'])}" target="_blank" class="rbtn">☕ Hot Recipe</a>`,
-    r['Cold Recipe Link'] && `<a href="${xe(r['Cold Recipe Link'])}" target="_blank" class="rbtn">🧊 Cold Recipe</a>`,
+    r['Hot Recipe Link'] && `<a href="${xe(r['Hot Recipe Link'])}" target="_blank" class="rbtn" onclick="event.stopPropagation()">☕ Hot Recipe</a>`,
+    r['Cold Recipe Link'] && `<a href="${xe(r['Cold Recipe Link'])}" target="_blank" class="rbtn" onclick="event.stopPropagation()">🧊 Cold Recipe</a>`,
   ].filter(Boolean);
 
   // Buy buttons
   const buyBtns = [];
-  if(r['Shopee Link']) buyBtns.push(`<a href="${xe(r['Shopee Link'])}" target="_blank" class="buy-btn buy-shopee">
+  if(r['Shopee Link']) buyBtns.push(`<a href="${xe(r['Shopee Link'])}" target="_blank" class="buy-btn buy-shopee" onclick="event.stopPropagation()">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
     Shopee</a>`);
-  if(r['Line Link']) buyBtns.push(`<a href="${xe(r['Line Link'])}" target="_blank" class="buy-btn buy-line">
+  if(r['Line Link']) buyBtns.push(`<a href="${xe(r['Line Link'])}" target="_blank" class="buy-btn buy-line" onclick="event.stopPropagation()">
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
     Line</a>`);
 
@@ -1492,10 +2234,11 @@ function mkCard(r){
   const collabLabel = r['Collaboration Type']?.startsWith('Collaboration') && r['Collaboration Type']!=='Collaboration'
     ? `<div class="card-collab">${xe(r['Collaboration Type'])}</div>` : '';
 
-  return `<div class="bcard">
+  const rowNum = r._rowNum || 0;
+  return `<div class="bcard" onclick="openBeanDetail(${rowNum || 0})" style="cursor:pointer">
     <div class="card-visual">
       ${imgHtml}
-      <div class="card-top-row">${collabBadge}${typeB}</div>
+      <div class="card-top-row">${collabBadge}</div>
       ${priceB}${nearlyB}
     </div>
     <div class="card-body">
@@ -1533,60 +2276,198 @@ function applyFilter(){
 }
 function sortBy(col){ if(sC===col)sA=!sA; else{sC=col;sA=true;} applyFilter(); }
 
+// ── Bean in Stock — read from first row of group, saved to Sheet ──
+function getBKG(rows){ return rows[0]?.['Bean in Stock (KG)'] || ''; }
+
+function toggleGroup(gid){
+  const chevron = document.getElementById('chv_'+gid);
+  const rows = document.querySelectorAll('.child-'+gid);
+  const isOpen = chevron.classList.toggle('open');
+  rows.forEach(r => r.classList.toggle('hidden', !isOpen));
+}
+
+function editBKG(firstRn, curVal){
+  const el = document.getElementById('bkg_'+firstRn);
+  if(!el) return;
+  el.readOnly = false; el.focus(); el.select();
+  el.style.outline = '1.5px solid var(--accent)';
+  el.style.borderRadius = '4px';
+
+  function commit(){
+    const newVal = el.value.trim();
+    el.readOnly = true;
+    el.style.outline = '';
+    if(newVal === curVal) return;
+
+    if(!SCRIPT_URL){ toast('Set Apps Script URL first','error'); return; }
+
+    // Update first row of this group in Sheet
+    const row = all.find(r => r._rowNum === firstRn);
+    if(!row) return;
+    row['Bean in Stock (KG)'] = newVal;
+    logStockChange(firstRn, 'Bean in Stock (KG)', curVal, newVal);
+
+    const data = {};
+    Object.entries(FM).forEach(([id,col])=>{ data[col]=row[col]||''; });
+    data['Bean in Stock (KG)'] = newVal;
+    const cb='_bkg'+Date.now();
+    window[cb]=function(res){
+      cln(cb,'_bkgScript');
+      if(res.status==='ok'){ toast('Bean in Stock saved','success'); }
+      else { toast('Save failed','error'); row['Bean in Stock (KG)']=curVal; }
+      renderTable();
+    };
+    inj('_bkgScript', SCRIPT_URL+'?'+new URLSearchParams({action:'update',sheet:TAB_NAME,callback:cb,data:JSON.stringify(data),row:firstRn}));
+  }
+
+  el.onblur = commit;
+  el.onkeydown = e=>{
+    if(e.key==='Enter'){ e.preventDefault(); el.blur(); }
+    if(e.key==='Escape'){ el.value=curVal; el.onblur=null; el.blur(); el.readOnly=true; el.style.outline=''; }
+  };
+}
+
 function renderTable(){
   if(!shown.length){ setTb(`<tr class="ph"><td colspan="26">No results</td></tr>`); return; }
-  document.getElementById('atb').innerHTML=shown.map((r,i)=>{
-    const rn=r._rowNum||(i+2);
-    const imgUrl=getImageUrl(r);
-    const thumbHtml=imgUrl
-      ? `<div class="tthumb"><img src="${xe(imgUrl)}" onerror="this.parentElement.innerHTML='☕'"></div>`
-      : `<div class="tthumb">☕</div>`;
-    const notes=(r['Tasting Notes']||'').split(/[,\/]/).map(n=>n.trim()).filter(Boolean).slice(0,3).join(' / ');
-    return `<tr>
-      <td class="tn">${i+1}</td>
-      <td>${sBadge(effectiveStatus(r))}</td>
-      <td class="tcode">${xe(r['Item Code'])||'—'}</td>
-      <td class="tname" title="${xe(r['Item Name']||'')}">${xe(r['Item Name']||'—')}</td>
-      <td>${thumbHtml}</td>
-      <td class="tdim">${r['Packing Type']||'—'}</td>
-      <td>${cBadge(r['Collaboration Type'])}</td>
-      <td class="tdim">${r['Taste Type']||'—'}</td>
-      <td class="tprice">${r['Sales Price']?'฿'+Number(r['Sales Price']).toLocaleString():'—'}</td>
-      <td style="text-align:center">${stockCell(r['Stock HQ'],  rn,'Stock HQ')}</td>
-      <td style="text-align:center">${stockCell(r['Stock CTW'], rn,'Stock CTW')}</td>
-      <td style="text-align:center">${stockCell(r['Stock K.Boy'],rn,'Stock K.Boy')}</td>
-      <td>${dateCell(r['Latest Stock Update Date'], rn, 'Latest Stock Update Date')}</td>
-      <td style="text-align:center">${stockCell(r['Bean in Stock (KG)'], rn, 'Bean in Stock (KG)')}</td>
-      <td>${dateCell(r['New Incoming Stock Date'], rn, 'New Incoming Stock Date')}</td>
-      <td class="tdim">${r.Roaster||'—'}</td>
-      <td class="tdim">${r['Roasting Level']||'—'}</td>
-      <td class="tdim">${r['Elevation']||'—'}</td>
-      <td class="tdim">${r.Origin||'—'}</td>
-      <td class="tdim">${r.Farm||'—'}</td>
-      <td class="tdim">${r['Process Method']||'—'}</td>
-      <td class="tdim" style="max-width:130px;overflow:hidden;text-overflow:ellipsis" title="${xe(r['Tasting Notes']||'')}">${xe(notes||'—')}</td>
-      <td>${r['Bean Description']?`<button class="ab" style="width:auto;padding:3px 8px;font-size:10px;letter-spacing:.3px" onclick="viewDesc(${rn})" title="View description">📋 View</button>`:'<span class="tdim">—</span>'}</td>
-      <td>${mkRLinks(r)}</td>
-      <td>${r['Shopee Link']?`<a href="${xe(r['Shopee Link'])}" target="_blank" class="rl" style="color:#ee4d2d;border-color:rgba(238,77,45,.2)">🛒</a>`:'<span class="tdim">—</span>'}</td>
-      <td>${r['Line Link']?`<a href="${xe(r['Line Link'])}" target="_blank" class="rl" style="color:#06c755;border-color:rgba(6,199,85,.2)">💬</a>`:'<span class="tdim">—</span>'}</td>
-      <td><div class="acts">
-        <button class="ab" onclick="openEdit(${rn})" title="Edit">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
-        </button>
-        <button class="ab d" onclick="openDel(${rn},'${xe(r['Item Name']||'')}')" title="Delete">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6 18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-        </button>
-      </div></td>
+
+  // Group by Item Name
+  const groups = {};
+  const groupOrder = [];
+  shown.forEach(r=>{
+    const name = r['Item Name'] || '—';
+    if(!groups[name]){ groups[name]=[]; groupOrder.push(name); }
+    groups[name].push(r);
+  });
+
+  let html = '';
+  let gi = 0;
+
+  groupOrder.forEach(name=>{
+    const rows = groups[name];
+    const gid  = 'g'+gi++;
+    const bkg  = getBKG(rows);
+    const firstRn = rows[0]?._rowNum || 0;
+    const first = rows[0];
+
+    // Total stock across all packing types in this group
+    const totalHQ  = rows.reduce((s,r)=>(s+(parseInt(r['Stock HQ'])||0)),0);
+    const totalCTW = rows.reduce((s,r)=>(s+(parseInt(r['Stock CTW'])||0)),0);
+    const totalBH  = rows.reduce((s,r)=>(s+(parseInt(r['Stock K.Boy'])||0)),0);
+    const totalAll = totalHQ+totalCTW+totalBH;
+    const stockColor = totalAll<=10?'var(--red)':totalAll<=30?'var(--orange)':'var(--green2)';
+    const colSpan = 26;
+
+    // ── Group header row — columns aligned to table headers ──
+    // col order: # status code name image packing collab taste price hq ctw bh stockUpdated beanKG refillDate roaster roast elev origin farm process notes desc recipe shopee line actions
+    const grpHl = rowHighlightClass(first);
+    html += `<tr class="grp-row ${grpHl}" onclick="toggleGroup('${gid}')">
+      <td><span class="grp-chevron open" id="chv_${gid}">›</span></td>
+      <td>${sBadge(effectiveStatus(first))}</td>
+      <td class="tdim" style="font-size:10px">${rows.length} packing${rows.length>1?'s':''}</td>
+      <td class="tname" style="font-weight:700;color:var(--dark)">${xe(name)}</td>
+      <td></td>
+      <td></td>
+      <td>${cBadge(first['Collaboration Type'])}</td>
+      <td class="tdim">${first['Taste Type']||''}</td>
+      <td></td>
+      <td style="text-align:center;font-weight:700;color:${stockColor}">${totalHQ||'—'}</td>
+      <td style="text-align:center;font-weight:700;color:${stockColor}">${totalCTW||'—'}</td>
+      <td style="text-align:center;font-weight:700;color:${stockColor}">${totalBH||'—'}</td>
+      <td></td>
+      <td style="text-align:center">
+        <div class="grp-bkg" onclick="event.stopPropagation();editBKG(${firstRn},'${bkg}')" title="Click to edit">
+          <input
+            id="bkg_${firstRn}"
+            class="grp-bkg-input"
+            type="number" min="0" step="0.1"
+            value="${bkg}"
+            readonly
+            placeholder="—"
+            onclick="event.stopPropagation();editBKG(${firstRn},'${bkg}')"
+          >
+          <span style="font-size:10px;color:var(--light)">KG</span>
+        </div>
+      </td>
+      <td></td>
+      <td class="col-full" style="font-size:11px;color:#9a7c5a;font-weight:500">${first.Roaster?xe(first.Roaster):''}</td>
+      <td class="col-full tdim" style="font-size:11px">${first['Roasting Level']||''}</td>
+      <td class="col-full tdim" style="font-size:11px">${first['Elevation']||''}</td>
+      <td class="col-full tdim" style="font-size:11px">${first.Origin||''}</td>
+      <td class="col-full tdim" style="font-size:11px">${first.Farm||''}</td>
+      <td class="col-full tdim" style="font-size:11px">${first['Process Method']||''}</td>
+      <td class="col-full tdim" style="font-size:11px;max-width:130px;overflow:hidden;text-overflow:ellipsis">${xe((first['Tasting Notes']||'').split(/[,\/]/).map(n=>n.trim()).filter(Boolean).slice(0,3).join(' / ')||'—')}</td>
+      <td class="col-full">${first['Bean Description']?`<button class="ab" style="width:auto;padding:3px 8px;font-size:10px" onclick="event.stopPropagation();viewDesc(${firstRn})" title="View">📋 View</button>`:'<span class="tdim">—</span>'}</td>
+      <td class="col-full"></td><td class="col-full"></td><td class="col-full"></td>
     </tr>`;
-  }).join('');
+
+    // ── Child rows ──
+    rows.forEach((r,i)=>{
+      const rn  = r._rowNum||(i+2);
+      const imgUrl = getImageUrl(r);
+      const thumbHtml = imgUrl
+        ? `<div class="tthumb"><img src="${xe(imgUrl)}" onerror="this.parentElement.innerHTML='☕'"></div>`
+        : `<div class="tthumb">☕</div>`;
+      const notes=(r['Tasting Notes']||'').split(/[,\/]/).map(n=>n.trim()).filter(Boolean).slice(0,3).join(' / ');
+
+      const es=effectiveStatus(r), hl=rowHighlightClass(r);
+      html += `<tr class="child-${gid} child-row ${hl}">
+        <td class="tn">${i+1}</td>
+        <td onclick="quickStatusEdit(${rn},'${r.Status||'Active'}')" title="Click to cycle status" style="cursor:pointer">${sBadge(es)}</td>
+        <td class="tcode">${xe(r['Item Code'])||'—'}</td>
+        <td class="tname" title="${xe(r['Item Name']||'')}">—</td>
+        <td>${thumbHtml}</td>
+        <td class="tdim" style="font-weight:600;color:var(--dark2)">${r['Packing Type']||'—'}</td>
+        <td>${cBadge(r['Collaboration Type'])}</td>
+        <td class="tdim">${r['Taste Type']||'—'}</td>
+        <td class="tprice">${r['Sales Price']?'฿'+Number(r['Sales Price']).toLocaleString():'—'}</td>
+        <td style="text-align:center">${stockCell(r['Stock HQ'],  rn,'Stock HQ')}</td>
+        <td style="text-align:center">${stockCell(r['Stock CTW'], rn,'Stock CTW')}</td>
+        <td style="text-align:center">${stockCell(r['Stock K.Boy'],rn,'Stock K.Boy')}</td>
+        <td>${dateCell(r['Latest Stock Update Date'], rn, 'Latest Stock Update Date')}</td>
+        <td style="text-align:center">${stockCell(r['Bean in Stock (KG)'], rn, 'Bean in Stock (KG)')}</td>
+        <td>${dateCell(r['New Incoming Stock Date'], rn, 'New Incoming Stock Date')}</td>
+        <td class="tdim col-full">${r.Roaster||'—'}</td>
+        <td class="tdim col-full">${r['Roasting Level']||'—'}</td>
+        <td class="tdim col-full">${r['Elevation']||'—'}</td>
+        <td class="tdim col-full">${r.Origin||'—'}</td>
+        <td class="tdim col-full">${r.Farm||'—'}</td>
+        <td class="tdim col-full">${r['Process Method']||'—'}</td>
+        <td class="tdim col-full" style="max-width:130px;overflow:hidden;text-overflow:ellipsis" title="${xe(r['Tasting Notes']||'')}">${xe(notes||'—')}</td>
+        <td class="col-full">${r['Bean Description']?`<button class="ab" style="width:auto;padding:3px 8px;font-size:10px" onclick="viewDesc(${rn})" title="View">📋 View</button>`:'<span class="tdim">—</span>'}</td>
+        <td class="col-full">${mkRLinks(r)}</td>
+        <td class="col-full">${r['Shopee Link']?`<a href="${xe(r['Shopee Link'])}" target="_blank" class="rl" style="color:#ee4d2d;border-color:rgba(238,77,45,.2)">🛒</a>`:'<span class="tdim">—</span>'}</td>
+        <td class="col-full">${r['Line Link']?`<a href="${xe(r['Line Link'])}" target="_blank" class="rl" style="color:#06c755;border-color:rgba(6,199,85,.2)">💬</a>`:'<span class="tdim">—</span>'}</td>
+        <td><div class="acts">
+          <button class="ab" onclick="openEdit(${rn})" title="Edit">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+          </button>
+          <button class="ab" onclick="openDuplicate(${rn})" title="Duplicate as new packing" style="color:var(--accent)">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+          <button class="ab d" onclick="openDel(${rn},'${xe(r['Item Name']||'')}')" title="Delete">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6 18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          </button>
+        </div></td>
+      </tr>`;
+    });
+  });
+
+  document.getElementById('atb').innerHTML = html;
 }
 
 // Compute effective status — override to Nearly Empty if total stock < 10
 function effectiveStatus(r){
   if(r.Status === 'Cannot Refill') return 'Cannot Refill';
-  const total = (parseInt(r['Stock HQ'])||0) + (parseInt(r['Stock CTW'])||0) + (parseInt(r['Stock K.Boy'])||0);
-  const hasStock = r['Stock HQ']||r['Stock CTW']||r['Stock K.Boy']; // only apply if any stock entered
-  if(hasStock && total < 10) return 'Nearly Empty';
+  const hq   = parseInt(r['Stock HQ'])  || 0;
+  const ctw  = parseInt(r['Stock CTW']) || 0;
+  const bh   = parseInt(r['Stock K.Boy']) || 0;
+  const bkg  = parseFloat(r['Bean in Stock (KG)']) || 0;
+  const total = hq + ctw + bh;
+  // All zeros → Cannot Refill
+  const hasAnyEntry = r['Stock HQ']||r['Stock CTW']||r['Stock K.Boy']||r['Bean in Stock (KG)'];
+  if(hasAnyEntry && total === 0 && bkg === 0) return 'Cannot Refill';
+  // Low stock → Nearly Empty
+  if(hasAnyEntry && total < 10) return 'Nearly Empty';
   return r.Status || '—';
 }
 
@@ -1609,12 +2490,17 @@ function mkRLinks(r){
 }
 
 function updateStats(){
-  document.getElementById('sT').textContent  = all.length;
-  document.getElementById('sA').textContent  = all.filter(r=>effectiveStatus(r)==='Active').length;
-  document.getElementById('sN').textContent  = all.filter(r=>effectiveStatus(r)==='Nearly Empty').length;
-  document.getElementById('sC').textContent  = all.filter(r=>effectiveStatus(r)==='Cannot Refill').length;
-  document.getElementById('sX').textContent  = all.filter(r=>r['Collaboration Type']?.startsWith('XB Bean')).length;
-  document.getElementById('sCo').textContent = all.filter(r=>r['Collaboration Type']?.startsWith('Collaboration')).length;
+  document.getElementById('sT').textContent  = new Set(all.map(r=>r['Item Name'])).size;
+  // For status/type stats — count unique bean names per group (using first row's effective status)
+  const groups = {};
+  all.forEach(r=>{ const n=r['Item Name']||'—'; if(!groups[n]) groups[n]=r; });
+  const gArr = Object.values(groups);
+  document.getElementById('sA').textContent  = gArr.filter(r=>effectiveStatus(r)==='Active').length;
+  document.getElementById('sN').textContent  = gArr.filter(r=>effectiveStatus(r)==='Nearly Empty').length;
+  document.getElementById('sC').textContent  = gArr.filter(r=>effectiveStatus(r)==='Cannot Refill').length;
+  document.getElementById('sX').textContent  = gArr.filter(r=>r['Collaboration Type']?.startsWith('XB Bean')).length;
+  document.getElementById('sCo').textContent = gArr.filter(r=>r['Collaboration Type']?.startsWith('Collaboration')).length;
+  updateStickyBar();
 }
 
 // ── FORM ──
@@ -1629,6 +2515,21 @@ function openEdit(rn){
   editR=rn; document.getElementById('fmT').textContent='Edit: '+(r['Item Name']||'');
   Object.entries(FM).forEach(([id,col])=>{ const el=document.getElementById(id); if(el) el.value=r[col]||''; });
   document.getElementById('fmOv').classList.add('open');
+}
+function openDuplicate(rn){
+  if(!SCRIPT_URL){ toast('Set Apps Script URL in Settings first','error'); openCfg(); return; }
+  const r=all.find(x=>x._rowNum===rn); if(!r) return;
+  editR=null; // new row, not update
+  document.getElementById('fmT').textContent='Duplicate: '+(r['Item Name']||'');
+  // Fill all fields from source row
+  Object.entries(FM).forEach(([id,col])=>{ const el=document.getElementById(id); if(el) el.value=r[col]||''; });
+  // Clear packing type so admin must choose new one
+  document.getElementById('f_pk').value='';
+  // Clear item code too
+  document.getElementById('f_cd').value='';
+  document.getElementById('fmOv').classList.add('open');
+  // Highlight packing field
+  setTimeout(()=>{ const pk=document.getElementById('f_pk'); if(pk){ pk.focus(); pk.style.borderColor='var(--accent)'; pk.style.boxShadow='0 0 0 3px rgba(0,113,227,.15)'; setTimeout(()=>{ pk.style.borderColor=''; pk.style.boxShadow=''; },2000); } },300);
 }
 function closeFm(){ document.getElementById('fmOv').classList.remove('open'); }
 function clrFm(){
@@ -1714,7 +2615,9 @@ function editStockCell(el){
     if(newVal === cur){ input.replaceWith(el); return; } // no change
 
     // Optimistic update
+    const oldVal = cur;
     row[field] = newVal;
+    logStockChange(rn, field, oldVal, newVal);
     // Re-render just this cell
     const td = input.parentElement;
     if(td) td.innerHTML = stockCell(newVal, rn, field);
@@ -1807,6 +2710,7 @@ function editDateCell(el){
   });
 }
 
+
 // ── Date formatter ──
 function fmtDate(raw){
   if(!raw || raw.trim()==='') return '—';
@@ -1853,10 +2757,11 @@ function toast(msg,type='success'){
   t.className='toast '+type+' show';
   clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast '+type,3200);
 }
-['cfgOv','fmOv','delOv','loginOv','descOv'].forEach(id=>
+['cfgOv','fmOv','delOv','loginOv','descOv','logOv','analyticsOv'].forEach(id=>
   document.getElementById(id)?.addEventListener('click',e=>{ if(e.target===e.currentTarget){ closeCfg(); closeFm(); closeDel(); closeLoginModal(); closeDesc(); }})
 );
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCfg(); closeFm(); closeDel(); closeLoginModal(); closeDesc(); }});
+document.getElementById('detailOv').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeDetail(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCfg(); closeFm(); closeDel(); closeLoginModal(); closeDesc(); closeLog(); closeDetail(); closeAnalytics(); }});
 </script>
 </body>
 </html>
