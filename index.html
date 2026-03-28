@@ -145,7 +145,18 @@ nav {
 .btn-dark:hover { background: var(--dark2); }
 .btn-outline { background: var(--white); color: var(--dark2); border: 1px solid var(--border); }
 .btn-outline:hover { border-color: var(--dark2); }
-.btn-sm { padding: 5px 10px; font-size: 11px; }
+#settingsBtn {
+  transition: opacity .15s;
+}
+#settingsBtn.admin-visible { opacity: 1; }
+
+#lockBtn {
+  opacity: 0;
+  transition: opacity .25s;
+}
+#lockBtn:hover { opacity: 1; }
+#lockBtn.admin-visible { opacity: .5; }
+#lockBtn.admin-visible:hover { opacity: 1; }
 
 /* ── PAGE SYSTEM ── */
 .page { display: none; }
@@ -168,13 +179,14 @@ nav {
 .cat-title em { font-style: italic; }
 .cat-sub { font-size: 13px; color: var(--light); letter-spacing: .3px; }
 
+/* ── Toolbar: search row only ── */
 .cat-toolbar {
-  padding: 16px 32px;
-  display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  padding: 12px 32px;
+  display: flex; gap: 10px; align-items: center;
   background: var(--white); border-bottom: 1px solid var(--border);
   position: sticky; top: 50px; z-index: 50;
 }
-.cat-search-wrap { position: relative; min-width: 200px; max-width: 280px; flex: 1; }
+.cat-search-wrap { position: relative; flex: 1; max-width: 340px; }
 .cat-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--lighter); pointer-events: none; }
 .cat-search {
   width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
@@ -184,30 +196,72 @@ nav {
 .cat-search:focus { border-color: var(--dark); box-shadow: 0 0 0 2px rgba(0,0,0,.06); }
 .cat-search::placeholder { color: var(--lighter); }
 
-.cat-dropdowns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+/* Filter toggle button */
+.filter-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 13px; border-radius: 6px;
+  font-size: 12px; font-weight: 500; font-family: inherit;
+  cursor: pointer; border: 1px solid var(--border);
+  background: var(--white); color: var(--mid);
+  transition: all .15s; white-space: nowrap; flex-shrink: 0;
+}
+.filter-toggle:hover { border-color: var(--dark2); color: var(--dark); }
+.filter-toggle.has-filter { border-color: var(--dark); color: var(--dark); background: var(--bg); }
+.filter-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--dark); display: none; flex-shrink: 0;
+}
+.filter-toggle.has-filter .filter-dot { display: block; }
+
+.cat-count { font-size: 12px; color: var(--lighter); margin-left: auto; }
+
+/* ── Filter panel (hidden by default) ── */
+.filter-panel {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  max-height: 0; overflow: hidden;
+  transition: max-height .3s cubic-bezier(.4,0,.2,1), padding .3s;
+  position: sticky; top: calc(50px + 45px); z-index: 49;
+}
+.filter-panel.open {
+  max-height: 120px;
+  padding: 14px 32px;
+}
+.filter-panel-inner {
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+}
 .cat-select-wrap { position: relative; }
 .cat-select-wrap::after {
   content: '';
-  position: absolute; right: 11px; top: 50%;
+  position: absolute; right: 10px; top: 50%;
   transform: translateY(-50%);
   width: 0; height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid var(--light);
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+  border-top: 3.5px solid var(--light);
   pointer-events: none;
 }
 select.cat-dd {
   appearance: none; -webkit-appearance: none;
-  background: var(--white); border: 1px solid var(--border);
-  border-radius: 6px; padding: 8px 30px 8px 12px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; padding: 7px 28px 7px 11px;
   font-size: 12px; font-weight: 500; font-family: inherit;
   color: var(--mid); cursor: pointer; outline: none;
   transition: border-color .15s, color .15s;
-  min-width: 110px;
+  min-width: 0;
 }
 select.cat-dd:focus { border-color: var(--dark2); }
-select.cat-dd.on { border-color: var(--dark); color: var(--dark); }
-.cat-count { font-size: 11px; color: var(--lighter); margin-left: auto; letter-spacing: .5px; }
+select.cat-dd.on { border-color: var(--dark); color: var(--dark); background: var(--white); }
+
+/* reset link */
+.filter-reset {
+  font-size: 11px; color: var(--lighter); cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+  background: none; border: none; font-family: inherit;
+  margin-left: 4px; transition: color .15s;
+}
+.filter-reset:hover { color: var(--dark); }
 
 /* ── CARD GRID ── */
 .cat-grid {
@@ -307,6 +361,11 @@ select.cat-dd.on { border-color: var(--dark); color: var(--dark); }
   letter-spacing: -.2px; color: var(--dark);
 }
 .card-name em { font-style: italic; }
+.card-roaster {
+  font-size: 11px; font-weight: 500; letter-spacing: .5px;
+  text-transform: uppercase; color: #9a7c5a;
+  margin-top: -4px;
+}
 .card-collab {
   font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--lighter);
   display: flex; align-items: center; gap: 8px;
@@ -332,6 +391,20 @@ select.cat-dd.on { border-color: var(--dark); color: var(--dark); }
   display: flex; align-items: center; justify-content: space-between;
   padding-top: 12px; border-top: 1px solid var(--border2);
 }
+.card-buy {
+  display: flex; gap: 8px; padding: 10px 0 2px;
+}
+.buy-btn {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 12px; border-radius: 6px;
+  font-size: 12px; font-weight: 500; letter-spacing: .3px;
+  text-decoration: none; transition: all .15s; border: 1px solid var(--border);
+  font-family: inherit;
+}
+.buy-shopee { background: rgba(238,77,45,.06); color: #ee4d2d; border-color: rgba(238,77,45,.2); }
+.buy-shopee:hover { background: rgba(238,77,45,.12); border-color: rgba(238,77,45,.4); }
+.buy-line { background: rgba(6,199,85,.06); color: #06a845; border-color: rgba(6,199,85,.2); }
+.buy-line:hover { background: rgba(6,199,85,.12); border-color: rgba(6,199,85,.4); }
 .pack-label { font-size: 10px; letter-spacing: .5px; color: var(--lighter); text-transform: uppercase; }
 .recipe-btns { display: flex; gap: 5px; }
 .rbtn {
@@ -537,16 +610,13 @@ tbody tr:hover td { background: #f9f9f5; }
   .cat-sub { font-size: 13px; }
 
   /* ── Toolbar ── */
-  .cat-toolbar {
-    padding: 12px 16px;
-    top: 48px;
-    gap: 8px;
-  }
-  .cat-search-wrap { max-width: 100%; min-width: 0; flex: 1 1 100%; }
+  .cat-toolbar { padding: 10px 16px; top: 48px; }
+  .cat-search-wrap { max-width: 100%; min-width: 0; flex: 1; }
   .cat-search { font-size: 14px; padding: 10px 12px 10px 34px; border-radius: 8px; }
-  .cat-dropdowns { flex: 1 1 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .cat-select-wrap { width: 100%; }
-  select.cat-dd { width: 100%; font-size: 13px; padding: 10px 28px 10px 12px; border-radius: 8px; min-width: 0; }
+  .filter-panel { top: calc(48px + 43px); padding: 0 16px; }
+  .filter-panel.open { padding: 12px 16px; max-height: 200px; }
+  .filter-panel-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  select.cat-dd { width: 100%; font-size: 13px; padding: 9px 26px 9px 11px; min-width: 0; border-radius: 8px; }
   .cat-count { display: none; }
 
   /* ── Card grid ── */
@@ -640,12 +710,23 @@ tbody tr:hover td { background: #f9f9f5; }
       <p class="cat-sub">Only the finest beans, curated for you</p>
     </div>
   </div>
+  <!-- search bar row -->
   <div class="cat-toolbar">
     <div class="cat-search-wrap">
       <svg class="cat-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input class="cat-search" id="cq" placeholder="Search beans…" oninput="renderCards()">
     </div>
-    <div class="cat-dropdowns">
+    <button class="filter-toggle" id="filterToggle" onclick="toggleFilterPanel()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+      Filter
+      <div class="filter-dot" id="filterDot"></div>
+    </button>
+    <span class="cat-count" id="ccount"></span>
+  </div>
+
+  <!-- collapsible filter panel -->
+  <div class="filter-panel" id="filterPanel">
+    <div class="filter-panel-inner">
       <div class="cat-select-wrap">
         <select class="cat-dd" id="cdType" onchange="applyCardFilter()">
           <option value="">All Types</option>
@@ -664,8 +745,28 @@ tbody tr:hover td { background: #f9f9f5; }
           <option>Highly Complex</option>
         </select>
       </div>
+      <div class="cat-select-wrap">
+        <select class="cat-dd" id="cdOrigin" onchange="applyCardFilter()">
+          <option value="">Origin</option>
+        </select>
+      </div>
+      <div class="cat-select-wrap">
+        <select class="cat-dd" id="cdRoast" onchange="applyCardFilter()">
+          <option value="">Roast Level</option>
+        </select>
+      </div>
+      <div class="cat-select-wrap">
+        <select class="cat-dd" id="cdRoaster" onchange="applyCardFilter()">
+          <option value="">Roaster</option>
+        </select>
+      </div>
+      <div class="cat-select-wrap">
+        <select class="cat-dd" id="cdProcess" onchange="applyCardFilter()">
+          <option value="">Process</option>
+        </select>
+      </div>
+      <button class="filter-reset" id="filterReset" onclick="resetFilters()" style="display:none">Reset all</button>
     </div>
-    <span class="cat-count" id="ccount"></span>
   </div>
   <div class="cat-grid" id="catGrid">
     <div class="cat-empty"><div class="cat-empty-icon">☕</div><div class="cat-empty-txt">Loading…</div></div>
@@ -754,15 +855,19 @@ tbody tr:hover td { background: #f9f9f5; }
           <th onclick="sortBy('New Incoming Stock Date')">Incoming</th>
           <th onclick="sortBy('Roaster')">Roaster</th>
           <th onclick="sortBy('Roasting Level')">Roast</th>
+          <th onclick="sortBy('Elevation')">Elevation</th>
           <th onclick="sortBy('Origin')">Origin</th>
+          <th onclick="sortBy('Farm')">Farm</th>
           <th onclick="sortBy('Process Method')">Process</th>
           <th>Tasting Notes</th>
           <th onclick="sortBy('Bean Description')">Description</th>
           <th>Recipe</th>
+          <th>Shopee</th>
+          <th>Line</th>
           <th style="width:64px"></th>
         </tr></thead>
         <tbody id="atb">
-          <tr class="ph"><td colspan="21"><span class="spin"></span>Loading from Google Sheets…</td></tr>
+          <tr class="ph"><td colspan="25"><span class="spin"></span>Loading from Google Sheets…</td></tr>
         </tbody>
       </table>
     </div></div>
@@ -862,6 +967,7 @@ tbody tr:hover td { background: #f9f9f5; }
         <div class="fi"><label>Process Method</label><input id="f_pm" placeholder="Washed / Natural / Honey"></div>
         <div class="fi"><label>Origin</label><input id="f_or" placeholder="Ethiopia, Colombia…"></div>
         <div class="fi"><label>Varieties</label><input id="f_va" placeholder="Heirloom, Gesha…"></div>
+        <div class="fi"><label>Farm</label><input id="f_farm" placeholder="ชื่อฟาร์ม / Farm name…"></div>
         <div class="fi sp3"><label>Tasting Notes</label><textarea id="f_tn" placeholder="Blueberry, Jasmine, Dark Chocolate…"></textarea></div>
       </div>
 
@@ -879,6 +985,18 @@ tbody tr:hover td { background: #f9f9f5; }
         <div class="fi spa">
           <label>Description <span style="font-weight:400;color:var(--lighter)">(Thai / English — shown to customers)</span></label>
           <textarea id="f_desc" rows="7" placeholder="Clean Sweet, Mountain Grown&#10;xPod : Sazamoo Doi Inthanon&#10;&#10;บรรยายรายละเอียดเมล็ด สวน กระบวนการ หรือ story ของ bean..."></textarea>
+        </div>
+      </div>
+
+      <div class="sec">Sales Channels</div>
+      <div class="fg f2">
+        <div class="fi">
+          <label>Shopee Link</label>
+          <input id="f_shopee" placeholder="https://shopee.co.th/…">
+        </div>
+        <div class="fi">
+          <label>Line Shopping Link</label>
+          <input id="f_line" placeholder="https://lin.ee/…">
         </div>
       </div>
     </div>
@@ -977,7 +1095,7 @@ let TAB_NAME   = localStorage.getItem('xb_tab')  || DEF_TAB;
 let SCRIPT_URL = localStorage.getItem('xb_url')  || 'https://script.google.com/macros/s/AKfycbzQUdruS0f1h9ctm8jbWKSyIzJyuF5_oZ58lguSgB3GZrUjh380U9EwO8U8-obLpnEu/exec';
 
 let all=[], shown=[], editR=null, delR=null, sC='', sA=true;
-let reloadTimer=null, activeType='', activeTaste='';
+let reloadTimer=null, activeType='', activeTaste='', activeOrigin='', activeRoast='', activeRoaster='', activeProcess='';
 
 const TASTES = ['Fruity','Floral','Nutty/Cocolately','Bold/Bitter','Bitter&Fruity','Highly Complex'];
 const FM = {
@@ -989,7 +1107,7 @@ const FM = {
   f_rl:'Roasting Level',f_el:'Elevation',f_pm:'Process Method',
   f_or:'Origin',f_va:'Varieties',f_hl:'Hot Recipe Link',
   f_hi:'Hot Recipe ID',f_col:'Cold Recipe Link',
-  f_ci:'Cold Recipe ID',f_gl:'Graphic Link',f_desc:'Bean Description'
+  f_ci:'Cold Recipe ID',f_gl:'Graphic Link',f_desc:'Bean Description',f_farm:'Farm',f_shopee:'Shopee Link',f_line:'Line Link'
 };
 
 // ════════════════════════════════════
@@ -1021,7 +1139,7 @@ function getImageUrl(row) {
 
 // ── Page nav ──
 function goPage(p) {
-  if(p==='admin' && !isAdmin){ openLoginModal(); return; }
+  if(p==='admin' && !isAdmin){ pendingAction='admin'; openLoginModal(); return; }
   ['cat','admin'].forEach(id => {
     document.getElementById('page'+cap(id)).classList.toggle('active', p===id);
     document.getElementById('tab'+cap(id)).classList.toggle('active', p===id);
@@ -1031,9 +1149,14 @@ function goPage(p) {
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
+let pendingAction = null;
+
 // ── Config ──
 function openCfg(){
-  if(!isAdmin){ openLoginModal(); return; }
+  pendingAction = 'cfg';
+  openLoginModal();
+}
+function _showCfg(){
   document.getElementById('cfgSid').value    = SHEET_ID;
   document.getElementById('cfgTab').value    = TAB_NAME;
   document.getElementById('cfgScript').value = SCRIPT_URL;
@@ -1053,7 +1176,7 @@ function saveCfg(){
 // ════════════════════════════════════
 //  ADMIN AUTH
 // ════════════════════════════════════
-const ADMIN_PASS = 'xbloom2025'; // <-- change this
+// passwords verified server-side via Apps Script — not stored in client
 let isAdmin = sessionStorage.getItem('xb_admin') === '1';
 
 function toggleAdminLock(){
@@ -1071,18 +1194,52 @@ function closeLoginModal(){
   document.getElementById('loginErr').style.display='none';
 }
 function submitLogin(){
-  const pw = document.getElementById('loginInput').value;
-  if(pw === ADMIN_PASS){
-    isAdmin = true;
-    sessionStorage.setItem('xb_admin','1');
-    closeLoginModal();
-    applyAdminUI();
-    toast('Admin mode enabled','success');
-  } else {
-    document.getElementById('loginErr').style.display='block';
-    document.getElementById('loginInput').value='';
-    document.getElementById('loginInput').focus();
+  const pw = document.getElementById('loginInput').value.trim();
+  if(!pw) return;
+  if(!SCRIPT_URL){
+    toast('Set Apps Script URL in Settings first','error');
+    return;
   }
+  // Disable button while verifying
+  const btn = document.querySelector('#loginOv .btn-dark');
+  if(btn){ btn.disabled=true; btn.innerHTML='<span class="spin"></span>Verifying…'; }
+
+  const cb = '_vp' + Date.now();
+  window[cb] = function(res){
+    document.getElementById('_vpScript')?.remove();
+    delete window[cb];
+    if(btn){ btn.disabled=false; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Sign In'; }
+
+    if(res.status === 'ok'){
+      const role = res.role; // 'admin' or 'settings'
+      if(role === 'admin'){
+        isAdmin = true;
+        sessionStorage.setItem('xb_admin','1');
+        applyAdminUI();
+        toast('Admin mode enabled','success');
+      } else {
+        toast('Access granted','success');
+      }
+      closeLoginModal();
+      if(pendingAction === 'cfg')      { pendingAction = null; _showCfg(); }
+      else if(pendingAction === 'admin'){ pendingAction = null; goPage('admin'); }
+      else { pendingAction = null; if(role==='admin') goPage('admin'); }
+    } else {
+      document.getElementById('loginErr').style.display='block';
+      document.getElementById('loginInput').value='';
+      document.getElementById('loginInput').focus();
+    }
+  };
+  const s = document.createElement('script');
+  s.id = '_vpScript';
+  s.src = `${SCRIPT_URL}?action=verifyPassword&pw=${encodeURIComponent(pw)}&callback=${cb}`;
+  s.onerror = function(){
+    document.getElementById('_vpScript')?.remove();
+    delete window[cb];
+    if(btn){ btn.disabled=false; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Sign In'; }
+    toast('Connection failed — cannot verify password','error');
+  };
+  document.body.appendChild(s);
 }
 function lockAdmin(){
   isAdmin = false;
@@ -1094,15 +1251,23 @@ function lockAdmin(){
   toast('Signed out','success');
 }
 function applyAdminUI(){
-  // Show/hide admin-only elements
-  document.querySelectorAll('.admin-only').forEach(el=>{
-    el.style.display = isAdmin ? '' : 'none';
-  });
-  // Lock icon — locked vs unlocked
+  // Admin Console tab — show/hide normally
+  const tabAdmin = document.getElementById('tabAdmin');
+  if(tabAdmin) tabAdmin.style.display = isAdmin ? '' : 'none';
+
+  // Settings — show only when admin
+  const settingsBtn = document.getElementById('settingsBtn');
+  if(settingsBtn){
+    settingsBtn.style.display = isAdmin ? '' : 'none';
+    settingsBtn.classList.toggle('admin-visible', isAdmin);
+  }
+
+  // Lock icon swap
   document.getElementById('lockIcon').innerHTML = isAdmin
     ? '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>'
     : '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
   document.getElementById('lockBtn').title = isAdmin ? 'Sign out of admin' : 'Admin login';
+  document.getElementById('lockBtn').classList.toggle('admin-visible', isAdmin);
 }
 
 
@@ -1124,11 +1289,11 @@ function applyAdminUI(){
 function loadSheet(silent){
   if(!silent){
     setSyncStatus('loading','Loading…');
-    setTb(`<tr class="ph"><td colspan="21"><span class="spin"></span>Loading from Google Sheets…</td></tr>`);
+    setTb(`<tr class="ph"><td colspan="25"><span class="spin"></span>Loading from Google Sheets…</td></tr>`);
   }
   if(!SCRIPT_URL){
     setSyncStatus('err','No URL set');
-    setTb(`<tr class="ph"><td colspan="21">กรุณาตั้งค่า Apps Script URL ใน Settings ก่อนครับ</td></tr>`);
+    setTb(`<tr class="ph"><td colspan="25">กรุณาตั้งค่า Apps Script URL ใน Settings ก่อนครับ</td></tr>`);
     return;
   }
   const cb = '_cb' + Date.now();
@@ -1137,14 +1302,14 @@ function loadSheet(silent){
     delete window[cb];
     if(res.status === 'ok'){
       all = res.data || [];
-      applyFilter(); renderCards(); updateStats();
+      applyFilter(); populateCatDropdowns(); renderCards(); updateStats();
       setSyncStatus('live', 'Live · ' + new Date().toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'}));
       document.getElementById('warnBanner').className = 'warn-banner';
       clearTimeout(reloadTimer); reloadTimer = setTimeout(()=>loadSheet(true), 30000);
       if(!silent) toast('Loaded ' + all.length + ' beans', 'success');
     } else {
       setSyncStatus('err','Error');
-      setTb(`<tr class="ph"><td colspan="21">❌ ${res.message||'โหลดไม่สำเร็จ'}</td></tr>`);
+      setTb(`<tr class="ph"><td colspan="25">❌ ${res.message||'โหลดไม่สำเร็จ'}</td></tr>`);
       if(!silent) toast(res.message || 'Load failed', 'error');
     }
   };
@@ -1155,7 +1320,7 @@ function loadSheet(silent){
     document.getElementById('_loadScript')?.remove();
     delete window[cb];
     setSyncStatus('err','Connection failed');
-    setTb(`<tr class="ph"><td colspan="21">❌ เชื่อมต่อไม่ได้ — ตรวจสอบ Apps Script URL</td></tr>`);
+    setTb(`<tr class="ph"><td colspan="25">❌ เชื่อมต่อไม่ได้ — ตรวจสอบ Apps Script URL</td></tr>`);
     if(!silent) toast('Connection failed', 'error');
   };
   document.body.appendChild(s);
@@ -1166,14 +1331,58 @@ function silentReload(){ loadSheet(true); }
 //  CATALOG
 // ════════════════════════════════════
 function buildTasteChips(){} // no-op: now using dropdowns
+function toggleFilterPanel(){
+  const panel  = document.getElementById('filterPanel');
+  const toggle = document.getElementById('filterToggle');
+  const isOpen = panel.classList.toggle('open');
+  toggle.querySelector('svg').style.opacity = isOpen ? '1' : '.6';
+}
+
+function resetFilters(){
+  ['cdType','cdTaste','cdOrigin','cdRoast','cdRoaster','cdProcess'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  applyCardFilter();
+}
+
+function updateFilterToggle(){
+  const hasFilter = ['cdType','cdTaste','cdOrigin','cdRoast','cdRoaster','cdProcess']
+    .some(id => document.getElementById(id)?.value);
+  document.getElementById('filterToggle')?.classList.toggle('has-filter', hasFilter);
+  const reset = document.getElementById('filterReset');
+  if(reset) reset.style.display = hasFilter ? '' : 'none';
+}
+
 function applyCardFilter(){
-  activeType  = document.getElementById('cdType')?.value  || '';
-  activeTaste = document.getElementById('cdTaste')?.value || '';
-  ['cdType','cdTaste'].forEach(id=>{
+  activeType  = document.getElementById('cdType')?.value    || '';
+  activeTaste = document.getElementById('cdTaste')?.value   || '';
+  activeOrigin  = document.getElementById('cdOrigin')?.value  || '';
+  activeRoast   = document.getElementById('cdRoast')?.value   || '';
+  activeRoaster = document.getElementById('cdRoaster')?.value || '';
+  activeProcess = document.getElementById('cdProcess')?.value || '';
+  ['cdType','cdTaste','cdOrigin','cdRoast','cdRoaster','cdProcess'].forEach(id=>{
     const el=document.getElementById(id);
     if(el) el.className='cat-dd'+(el.value?' on':'');
   });
+  updateFilterToggle();
   renderCards();
+}
+
+// Populate dynamic dropdowns from loaded data
+function populateCatDropdowns(){
+  // Populate from all non-empty rows (not pre-filtered) so dropdowns always have values
+  const uniq = (col) => [...new Set(all.map(r=>r[col]).filter(v=>v&&v.trim()!==''))].sort();
+  const fill = (id, vals) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    const cur = el.value;
+    const first = el.options[0].outerHTML;
+    el.innerHTML = first + vals.map(v=>`<option${v===cur?' selected':''}>${v}</option>`).join('');
+  };
+  fill('cdOrigin',  uniq('Origin'));
+  fill('cdRoast',   uniq('Roasting Level'));
+  fill('cdRoaster', uniq('Roaster'));
+  fill('cdProcess', uniq('Process Method'));
 }
 
 function packGroup(p){
@@ -1194,8 +1403,12 @@ function renderCards(){
     if(r.Status==='Cannot Refill') return false;
     if(!CATALOG_PACKING.includes(r['Packing Type'])) return false;
     if(q&&!r['Item Name']?.toLowerCase().includes(q)&&!r['Item Code']?.toLowerCase().includes(q)) return false;
-    if(activeType && r['Packing Type']!==activeType) return false;
-    if(activeTaste && r['Taste Type']!==activeTaste) return false;
+    if(activeType   && r['Packing Type']!==activeType)      return false;
+    if(activeTaste  && r['Taste Type']!==activeTaste)       return false;
+    if(activeOrigin  && r['Origin']!==activeOrigin)           return false;
+    if(activeRoast   && r['Roasting Level']!==activeRoast)   return false;
+    if(activeRoaster && r['Roaster']!==activeRoaster)        return false;
+    if(activeProcess && r['Process Method']!==activeProcess) return false;
     return true;
   });
   const cc=document.getElementById('ccount');
@@ -1242,7 +1455,7 @@ function mkCard(r){
     r.Origin && {l:'Origin',v:r.Origin},
     r['Process Method'] && {l:'Process',v:r['Process Method']},
     r['Roasting Level'] && {l:'Roast',v:r['Roasting Level']},
-    r.Roaster && {l:'Roaster',v:r.Roaster},
+    r.Farm && {l:'Farm',v:r.Farm},
   ].filter(Boolean).slice(0,4);
 
   const metaHtml = metaItems.length ? `
@@ -1257,11 +1470,21 @@ function mkCard(r){
     r['Cold Recipe Link'] && `<a href="${xe(r['Cold Recipe Link'])}" target="_blank" class="rbtn">🧊 Cold Recipe</a>`,
   ].filter(Boolean);
 
-  const footHtml = (r['Packing Type']||recipes.length) ? `
+  // Buy buttons
+  const buyBtns = [];
+  if(r['Shopee Link']) buyBtns.push(`<a href="${xe(r['Shopee Link'])}" target="_blank" class="buy-btn buy-shopee">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    Shopee</a>`);
+  if(r['Line Link']) buyBtns.push(`<a href="${xe(r['Line Link'])}" target="_blank" class="buy-btn buy-line">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Line</a>`);
+
+  const footHtml = (r['Packing Type']||recipes.length||buyBtns.length) ? `
     <div class="card-foot">
       <div class="pack-label">${xe(r['Packing Type']||'')}</div>
       <div class="recipe-btns">${recipes.join('')}</div>
-    </div>` : '';
+    </div>
+    ${buyBtns.length ? `<div class="card-buy">${buyBtns.join('')}</div>` : ''}` : '';
 
   // collab label
   const collabLabel = r['Collaboration Type']?.startsWith('Collaboration') && r['Collaboration Type']!=='Collaboration'
@@ -1275,6 +1498,7 @@ function mkCard(r){
     </div>
     <div class="card-body">
       <div class="card-name">${xe(r['Item Name']||'Unnamed Bean')}</div>
+      ${r.Roaster ? `<div class="card-roaster">Roasted by ${xe(r.Roaster)}</div>` : ''}
       ${collabLabel}
       ${notesHtml}
       ${metaHtml}
@@ -1308,7 +1532,7 @@ function applyFilter(){
 function sortBy(col){ if(sC===col)sA=!sA; else{sC=col;sA=true;} applyFilter(); }
 
 function renderTable(){
-  if(!shown.length){ setTb(`<tr class="ph"><td colspan="21">No results</td></tr>`); return; }
+  if(!shown.length){ setTb(`<tr class="ph"><td colspan="25">No results</td></tr>`); return; }
   document.getElementById('atb').innerHTML=shown.map((r,i)=>{
     const rn=r._rowNum||(i+2);
     const imgUrl=getImageUrl(r);
@@ -1333,11 +1557,15 @@ function renderTable(){
       <td class="tdim" style="font-size:11px">${fmtDate(r['New Incoming Stock Date'])}</td>
       <td class="tdim">${r.Roaster||'—'}</td>
       <td class="tdim">${r['Roasting Level']||'—'}</td>
+      <td class="tdim">${r['Elevation']||'—'}</td>
       <td class="tdim">${r.Origin||'—'}</td>
+      <td class="tdim">${r.Farm||'—'}</td>
       <td class="tdim">${r['Process Method']||'—'}</td>
       <td class="tdim" style="max-width:130px;overflow:hidden;text-overflow:ellipsis" title="${xe(r['Tasting Notes']||'')}">${xe(notes||'—')}</td>
       <td>${r['Bean Description']?`<button class="ab" style="width:auto;padding:3px 8px;font-size:10px;letter-spacing:.3px" onclick="viewDesc(${rn})" title="View description">📋 View</button>`:'<span class="tdim">—</span>'}</td>
       <td>${mkRLinks(r)}</td>
+      <td>${r['Shopee Link']?`<a href="${xe(r['Shopee Link'])}" target="_blank" class="rl" style="color:#ee4d2d;border-color:rgba(238,77,45,.2)">🛒</a>`:'<span class="tdim">—</span>'}</td>
+      <td>${r['Line Link']?`<a href="${xe(r['Line Link'])}" target="_blank" class="rl" style="color:#06c755;border-color:rgba(6,199,85,.2)">💬</a>`:'<span class="tdim">—</span>'}</td>
       <td><div class="acts">
         <button class="ab" onclick="openEdit(${rn})" title="Edit">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
