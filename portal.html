@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>xBloom Partner Portal — xPod Collaboration Form</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Config ── แก้ URL ตรงนี้ให้ตรงกับ Apps Script ของคุณ */
+:root {
+  --script-url: '';
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --dark:    #1a1a18;
+  --dark2:   #2d2d2a;
+  --mid:     #6b6b64;
+  --light:   #9a9a92;
+  --lighter: #c4c4bc;
+  --border:  rgba(0,0,0,.1);
+  --border2: rgba(0,0,0,.06);
+  --bg:      #f8f8f6;
+  --white:   #ffffff;
+  --green:   #2d6a4f;
+  --green2:  #40916c;
+  --red:     #c03030;
+  --red-bg:  rgba(192,48,48,.07);
+  --accent:  #1a1a18;
+}
+
+body {
+  font-family: 'Inter Tight', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--dark);
+  min-height: 100vh;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--dark);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.header-brand {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #fff;
+  letter-spacing: -.2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-brand-sep { width: 1px; height: 16px; background: rgba(255,255,255,.25); }
+.header-tag {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  font-weight: 500;
+}
+
+/* ── Hero ── */
+.hero {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 32px 32px;
+}
+.hero-inner { max-width: 700px; margin: 0 auto; }
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--lighter);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+.hero-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -.4px;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.hero-sub { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+/* ── Form wrapper ── */
+.form-wrap {
+  max-width: 700px;
+  margin: 32px auto;
+  padding: 0 32px 80px;
+}
+
+/* ── Section ── */
+.section {
+  background: var(--white);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.section-header {
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--dark);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.section-title { font-size: 14px; font-weight: 600; color: var(--dark); }
+.section-sub { font-size: 11px; color: var(--lighter); margin-top: 1px; }
+.section-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+/* ── Field ── */
+.fi { display: flex; flex-direction: column; gap: 5px; }
+.fi label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mid);
+  letter-spacing: .2px;
+}
+.fi label .req { color: var(--red); margin-left: 2px; }
+.fi input, .fi select, .fi textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--dark);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+.fi input:focus, .fi select:focus, .fi textarea:focus {
+  border-color: var(--dark);
+  box-shadow: 0 0 0 3px rgba(0,0,0,.06);
+  background: var(--white);
+}
+.fi input::placeholder, .fi textarea::placeholder { color: var(--lighter); }
+.fi textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+.fi .hint { font-size: 10px; color: var(--lighter); margin-top: 2px; line-height: 1.5; }
+.fi input.err, .fi select.err, .fi textarea.err { border-color: var(--red); background: var(--red-bg); }
+
+/* ── Grid ── */
+.fg { display: grid; gap: 12px; }
+.f2 { grid-template-columns: 1fr 1fr; }
+.f3 { grid-template-columns: 1fr 1fr 1fr; }
+
+/* ── Radio group ── */
+.radio-group { display: flex; flex-direction: column; gap: 10px; }
+.radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.radio-card:hover { border-color: var(--dark2); background: var(--bg); }
+.radio-card.selected { border-color: var(--dark); background: var(--bg); }
+.radio-card input[type=radio] { margin-top: 2px; flex-shrink: 0; accent-color: var(--dark); }
+.radio-label { font-size: 13px; font-weight: 500; color: var(--dark); }
+.radio-sub { font-size: 11px; color: var(--mid); margin-top: 2px; line-height: 1.5; }
+.price-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.price-row label { font-size: 12px; color: var(--mid); white-space: nowrap; }
+.price-input {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--dark);
+  outline: none;
+  width: 120px;
+  transition: border-color .15s;
+}
+.price-input:focus { border-color: var(--dark); }
+
+/* ── File hint box ── */
+.file-hint {
+  background: rgba(45,106,79,.06);
+  border: 1px solid rgba(45,106,79,.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 12px;
+  color: var(--green);
+  line-height: 1.7;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* ── Submit area ── */
+.submit-wrap {
+  background: var(--white);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.submit-note { font-size: 12px; color: var(--mid); line-height: 1.6; }
+.btn-submit {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 13px 28px;
+  background: var(--dark);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-submit:hover { background: var(--dark2); }
+.btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Success screen ── */
+.success-screen {
+  display: none;
+  max-width: 700px;
+  margin: 80px auto;
+  padding: 0 32px;
+  text-align: center;
+}
+.success-icon {
+  width: 64px; height: 64px;
+  background: rgba(45,106,79,.1);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 28px;
+}
+.success-title {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  margin-bottom: 12px;
+  color: var(--dark);
+}
+.success-sub { font-size: 14px; color: var(--mid); line-height: 1.8; max-width: 400px; margin: 0 auto; }
+
+/* ── Spin ── */
+.spin {
+  display: inline-block; width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: sp .7s linear infinite;
+  vertical-align: middle;
+}
+@keyframes sp { to { transform: rotate(360deg); } }
+
+/* ── Error toast ── */
+.err-toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: var(--dark); color: #fff; padding: 10px 20px;
+  border-radius: 8px; font-size: 13px; font-weight: 500;
+  z-index: 9999; opacity: 0; transition: all .3s;
+  white-space: nowrap;
+}
+.err-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .hero { padding: 28px 20px 24px; }
+  .form-wrap { padding: 0 16px 60px; }
+  .section-body { padding: 16px; }
+  .f2, .f3 { grid-template-columns: 1fr; }
+  .submit-wrap { flex-direction: column; align-items: stretch; text-align: center; }
+  .hero-title { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="header-brand">
+    xbloom <div class="header-brand-sep"></div> Thailand
+    <div class="header-tag">Partner Portal</div>
+  </div>
+</header>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">xPod Collaboration</div>
+    <h1 class="hero-title">Partner Submission Form</h1>
+    <p class="hero-sub">กรุณากรอกข้อมูลให้ครบถ้วน ทีม xBloom Thailand จะตรวจสอบและติดต่อกลับภายใน 3 วันทำการ</p>
+  </div>
+</div>
+
+<!-- ── Form ── -->
+<div class="form-wrap" id="formWrap">
+
+  <!-- Section 0: Partner Info -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">0</div>
+      <div>
+        <div class="section-title">Partner Information</div>
+        <div class="section-sub">ข้อมูลร้านและผู้ส่งฟอร์ม</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="fg f2">
+        <div class="fi">
+          <label>Partner / ชื่อร้าน <span class="req">*</span></label>
+          <input id="p_partner" placeholder="Casa Lapin, Roots, Pacamara…">
+        </div>
+        <div class="fi">
+          <label>ชื่อผู้ส่งฟอร์ม <span class="req">*</span></label>
+          <input id="p_sender" placeholder="คุณ…">
+        </div>
+      </div>
+      <div class="fg f2">
+        <div class="fi">
+          <label>อีเมลผู้ส่ง <span class="req">*</span></label>
+          <input id="p_email" type="email" placeholder="name@cafe.com">
+        </div>
+        <div class="fi">
+          <label>เบอร์ติดต่อ</label>
+          <input id="p_phone" placeholder="08x-xxx-xxxx">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 1: Bean Details -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div>
+        <div class="section-title">Bean Details</div>
+        <div class="section-sub">ข้อมูลเมล็ดกาแฟ</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="fi">
+        <label>Product Name / ชื่อสินค้า <span class="req">*</span></label>
+        <input id="p_name" placeholder="Peru Cusco Pacaypata Gesha">
+      </div>
+      <div class="fg f2">
+        <div class="fi">
+          <label>Origin / ที่มาของเมล็ด <span class="req">*</span></label>
+          <input id="p_origin" placeholder="Peru, Ethiopia, Colombia…">
+        </div>
+        <div class="fi">
+          <label>Farm / ชื่อฟาร์ม</label>
+          <input id="p_farm" placeholder="ชื่อฟาร์ม">
+        </div>
+      </div>
+      <div class="fg f3">
+        <div class="fi">
+          <label>Roast Level / ระดับคั่ว <span class="req">*</span></label>
+          <select id="p_roast">
+            <option value="">— เลือก —</option>
+            <option>Light</option>
+            <option>Light - Medium</option>
+            <option>Medium</option>
+            <option>Medium - Dark</option>
+            <option>Dark</option>
+          </select>
+        </div>
+        <div class="fi">
+          <label>Process / วิธีการ <span class="req">*</span></label>
+          <select id="p_process">
+            <option value="">— เลือก —</option>
+            <option>Washed</option>
+            <option>Natural</option>
+            <option>Honey</option>
+            <option>Anaerobic Washed</option>
+            <option>Anaerobic Natural</option>
+            <option>Wet Hulled</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fi">
+          <label>Varieties / พันธุ์</label>
+          <input id="p_varieties" placeholder="Gesha, Caturra…">
+        </div>
+      </div>
+      <div class="fg f2">
+        <div class="fi">
+          <label>Altitude / ระดับความสูง</label>
+          <input id="p_altitude" placeholder="1,600 - 1,900 MASL.">
+        </div>
+        <div class="fi">
+          <label>Taste Notes / รสชาติ <span class="req">*</span></label>
+          <input id="p_taste" placeholder="White Floral, Apricot, Honey…">
+        </div>
+      </div>
+      <div class="fi">
+        <label>Quick Description / อธิบายรสชาติสั้นๆ</label>
+        <textarea id="p_desc" rows="3" placeholder="เช่น Smooth Lychee / Sweet Caramel / Apple Bloom&#10;กาแฟเปรูเป็น Washed Process สายพันธุ์เกชา ที่ให้รสชาติเบาสบาย…"></textarea>
+        <div class="hint">อธิบายให้ลูกค้าทั่วไปเข้าใจ ไม่ต้องใช้ศัพท์เทคนิค</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 2: Recipe Links -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div>
+        <div class="section-title">xBloom Recipe Links</div>
+        <div class="section-sub">ลิงก์สูตรชง hot/cold จากแอป xBloom</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="fg f2">
+        <div class="fi">
+          <label>Hot Recipe Link</label>
+          <input id="p_hot" type="url" placeholder="https://share-h5.xbloom.com/?id=…">
+        </div>
+        <div class="fi">
+          <label>Cold Recipe Link</label>
+          <input id="p_cold" type="url" placeholder="https://share-h5.xbloom.com/?id=…">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Graphic Files -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div>
+        <div class="section-title">Graphic & Logo Files</div>
+        <div class="section-sub">กรุณาแนบลิงก์ Google Drive หรือ WeTransfer</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="file-hint">
+        <span>📁</span>
+        <div>อัปโหลดไฟล์ไปที่ Google Drive แล้วแชร์ลิงก์มาที่นี่ (Anyone with link can view)<br>
+        รองรับ: Brand Guideline PDF, Graphic AI/PSD/PNG, Logo AI/SVG/PNG</div>
+      </div>
+      <div class="fi">
+        <label>Brand Guideline (คู่มือแบรนด์ ถ้ามี)</label>
+        <input id="p_brand" type="url" placeholder="https://drive.google.com/…">
+      </div>
+      <div class="fg f2">
+        <div class="fi">
+          <label>Graphic ที่ใช้อยู่ (ถ้ามี)</label>
+          <input id="p_graphic" type="url" placeholder="https://drive.google.com/…">
+        </div>
+        <div class="fi">
+          <label>Logo ร้าน</label>
+          <input id="p_logo" type="url" placeholder="https://drive.google.com/…">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 4: Agreement Type -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div>
+        <div class="section-title">รูปแบบความร่วมมือ</div>
+        <div class="section-sub">เลือก Type ที่ตรงกับข้อตกลง</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="radio-group">
+        <label class="radio-card" id="rc1">
+          <input type="radio" name="collab_type" value="Type 1" onchange="selectType(this)">
+          <div>
+            <div class="radio-label">Type 1 — xBloom ซื้อเมล็ดจาก Partner</div>
+            <div class="radio-sub">xBloom Thailand ซื้อเมล็ดในราคาที่ตกลงกัน ต่อกิโลกรัม</div>
+            <div class="price-row" id="priceRow" style="display:none">
+              <label>ราคา (บาท/กิโล):</label>
+              <input class="price-input" id="p_price" type="number" placeholder="0" min="0">
+            </div>
+          </div>
+        </label>
+        <label class="radio-card" id="rc2">
+          <input type="radio" name="collab_type" value="Type 2" onchange="selectType(this)">
+          <div>
+            <div class="radio-label">Type 2 — Partner ส่งเมล็ดให้ xBloom บรรจุ</div>
+            <div class="radio-sub">Partner ส่งเมล็ดมาให้ xBloom Thailand บรรจุ ค่าบรรจุ 45 บาท/พอต รวมทุกอย่าง</div>
+          </div>
+        </label>
+      </div>
+      <div class="fi" style="margin-top:4px">
+        <label>หมายเหตุ / เพิ่มเติม</label>
+        <textarea id="p_notes" rows="2" placeholder="ข้อมูลเพิ่มเติมหรือข้อตกลงพิเศษ…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-wrap">
+    <div class="submit-note">
+      ข้อมูลจะถูกส่งให้ทีม xBloom Thailand ตรวจสอบ<br>
+      และจะได้รับการติดต่อกลับภายใน <strong>3 วันทำการ</strong>
+    </div>
+    <button class="btn-submit" id="submitBtn" onclick="submitForm()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      ส่งข้อมูล
+    </button>
+  </div>
+
+</div><!-- /form-wrap -->
+
+<!-- Success -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✓</div>
+  <div class="success-title">ส่งข้อมูลเรียบร้อยแล้ว</div>
+  <p class="success-sub">
+    ขอบคุณที่ส่งข้อมูลมานะครับ<br>
+    ทีม xBloom Thailand จะตรวจสอบและติดต่อกลับภายใน 3 วันทำการ<br><br>
+    <strong id="successName"></strong>
+  </p>
+</div>
+
+<div class="err-toast" id="errToast"></div>
+
+<script>
+// ══════════════════════════════════════
+//  CONFIG — ใส่ Apps Script URL ตรงนี้
+// ══════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQUdruS0f1h9ctm8jbWKSyIzJyuF5_oZ58lguSgB3GZrUjh380U9EwO8U8-obLpnEu/exec';
+
+// ── Radio select ──
+function selectType(radio){
+  document.getElementById('rc1').classList.toggle('selected', radio.value==='Type 1');
+  document.getElementById('rc2').classList.toggle('selected', radio.value==='Type 2');
+  document.getElementById('priceRow').style.display = radio.value==='Type 1' ? 'flex' : 'none';
+}
+
+// ── Toast ──
+function showErr(msg){
+  const t = document.getElementById('errToast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ── Validation ──
+function required(id, label){
+  const el = document.getElementById(id);
+  const ok = el.value.trim() !== '';
+  el.classList.toggle('err', !ok);
+  if(!ok) showErr(`กรุณากรอก ${label}`);
+  return ok;
+}
+
+// ── Submit ──
+function submitForm(){
+  // Clear errors
+  document.querySelectorAll('.err').forEach(e=>e.classList.remove('err'));
+
+  // Validate
+  if(!required('p_partner','ชื่อร้าน')) return;
+  if(!required('p_sender','ชื่อผู้ส่ง')) return;
+  if(!required('p_email','อีเมล')) return;
+  if(!required('p_name','ชื่อสินค้า')) return;
+  if(!required('p_origin','Origin')) return;
+  if(!required('p_roast','Roast Level')) return;
+  if(!required('p_process','Process')) return;
+  if(!required('p_taste','Taste Notes')) return;
+
+  const collabType = document.querySelector('input[name=collab_type]:checked')?.value || '';
+  if(!collabType){ showErr('กรุณาเลือกรูปแบบความร่วมมือ'); return; }
+
+  const data = {
+    'Partner Name':     document.getElementById('p_partner').value.trim(),
+    'Sender Name':      document.getElementById('p_sender').value.trim(),
+    'Sender Email':     document.getElementById('p_email').value.trim(),
+    'Sender Phone':     document.getElementById('p_phone').value.trim(),
+    'Item Name':        document.getElementById('p_name').value.trim(),
+    'Origin':           document.getElementById('p_origin').value.trim(),
+    'Farm':             document.getElementById('p_farm').value.trim(),
+    'Roasting Level':   document.getElementById('p_roast').value,
+    'Process Method':   document.getElementById('p_process').value,
+    'Varieties':        document.getElementById('p_varieties').value.trim(),
+    'Elevation':        document.getElementById('p_altitude').value.trim(),
+    'Tasting Notes':    document.getElementById('p_taste').value.trim(),
+    'Bean Description': document.getElementById('p_desc').value.trim(),
+    'Hot Recipe Link':  document.getElementById('p_hot').value.trim(),
+    'Cold Recipe Link': document.getElementById('p_cold').value.trim(),
+    'Brand Guideline':  document.getElementById('p_brand').value.trim(),
+    'Graphic Link':     document.getElementById('p_graphic').value.trim(),
+    'Logo Link':        document.getElementById('p_logo').value.trim(),
+    'Collab Type':      collabType,
+    'Price Per KG':     collabType==='Type 1' ? (document.getElementById('p_price').value||'') : '',
+    'Notes':            document.getElementById('p_notes').value.trim(),
+    'Submitted At':     new Date().toLocaleString('th-TH',{timeZone:'Asia/Bangkok'}),
+    'Status':           'Pending',
+  };
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> กำลังส่ง…';
+
+  const cb = '_sub' + Date.now();
+  window[cb] = function(res){
+    document.getElementById('_subScript')?.remove();
+    delete window[cb];
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ส่งข้อมูล';
+    if(res.status === 'ok'){
+      document.getElementById('formWrap').style.display = 'none';
+      document.getElementById('successScreen').style.display = 'block';
+      document.getElementById('successName').textContent = data['Partner Name'] + ' — ' + data['Item Name'];
+    } else {
+      showErr('เกิดข้อผิดพลาด: ' + (res.message||'ลองอีกครั้ง'));
+    }
+  };
+  const s = document.createElement('script');
+  s.id = '_subScript';
+  s.src = SCRIPT_URL + '?' + new URLSearchParams({
+    action: 'submitPending',
+    callback: cb,
+    data: JSON.stringify(data)
+  });
+  s.onerror = function(){
+    document.getElementById('_subScript')?.remove();
+    delete window[cb];
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ส่งข้อมูล';
+    showErr('เชื่อมต่อไม่ได้ กรุณาลองอีกครั้ง');
+  };
+  document.body.appendChild(s);
+}
+</script>
+</body>
+</html>
