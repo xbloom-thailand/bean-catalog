@@ -1050,6 +1050,11 @@ tbody tr:hover td { background: #f9f9f5; }
       Settings
     </button>
     <button class="lang-toggle" id="langToggle" onclick="toggleLang()"><span id="langLabel">EN</span></button>
+    <!-- user badge -->
+    <button class="btn btn-outline btn-sm" id="userBadge" onclick="openUserLogin()" title="Sign in / Switch user" style="display:none;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;gap:5px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span id="userBadgeName"></span>
+    </button>
     <!-- lock/unlock button always visible -->
     <button class="btn btn-outline btn-sm" id="lockBtn" onclick="toggleAdminLock()" title="Admin login">
       <svg id="lockIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -1503,7 +1508,7 @@ tbody tr:hover td { background: #f9f9f5; }
 
 <!-- ══ DELETE MODAL ══ -->
 <div class="ov" id="delOv">
-  <div class="modal">
+  <div class="modal" style="width:360px;max-width:95vw">
     <div class="dm">
       <div class="di">🗑</div>
       <div class="dtt">Delete this bean?</div>
@@ -1549,6 +1554,43 @@ tbody tr:hover td { background: #f9f9f5; }
 
 
 
+
+<!-- ══ USER LOGIN MODAL ══ -->
+<div class="ov" id="userLoginOv" style="z-index:500">
+  <div class="modal" style="width:380px;max-width:95vw">
+    <div class="mh">
+      <div class="mt" style="display:flex;align-items:center;gap:8px">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        Sign In
+      </div>
+    </div>
+    <div class="mb" style="padding:24px 22px;display:flex;flex-direction:column;gap:14px">
+      <div class="fi">
+        <label>ชื่อ / Name</label>
+        <select id="ulUser" style="font-size:14px;padding:10px 12px">
+          <option value="">— เลือกชื่อ —</option>
+        </select>
+      </div>
+      <div class="fi">
+        <label>PIN (4 หลัก)</label>
+        <input id="ulPin" type="password" inputmode="numeric" maxlength="4"
+          placeholder="••••"
+          onkeydown="if(event.key==='Enter') submitUserLogin()"
+          style="font-size:22px;padding:10px 12px;letter-spacing:6px;text-align:center">
+      </div>
+      <div id="ulErr" style="display:none;font-size:12px;color:var(--red);text-align:center;padding:6px 10px;background:var(--red-bg);border-radius:6px">
+        PIN ไม่ถูกต้อง กรุณาลองใหม่
+      </div>
+    </div>
+    <div class="mf">
+      <div style="font-size:11px;color:var(--lighter);margin-right:auto">ต้องล็อกอินทุกครั้งที่เปิดแอป</div>
+      <button class="btn btn-dark" onclick="submitUserLogin()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        เข้าสู่ระบบ
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- ══ ANALYTICS MODAL ══ -->
 <div class="ov" id="analyticsOv">
@@ -1645,6 +1687,7 @@ tbody tr:hover td { background: #f9f9f5; }
           <thead>
             <tr style="background:#f4f4f0;position:sticky;top:0">
               <th style="padding:9px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">Time</th>
+              <th style="padding:9px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">By</th>
               <th style="padding:9px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">Item</th>
               <th style="padding:9px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">Field</th>
               <th style="padding:9px 14px;text-align:center;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--light);border-bottom:1px solid var(--border)">From</th>
@@ -1652,7 +1695,7 @@ tbody tr:hover td { background: #f9f9f5; }
             </tr>
           </thead>
           <tbody id="logBody">
-            <tr><td colspan="5" style="padding:40px;text-align:center;color:var(--lighter)"><span class="spin"></span>Loading log…</td></tr>
+            <tr><td colspan="6" style="padding:40px;text-align:center;color:var(--lighter)"><span class="spin"></span>Loading log…</td></tr>
           </tbody>
         </table>
       </div>
@@ -1675,7 +1718,7 @@ let SHEET_ID   = localStorage.getItem('xb_sid')  || DEF_SID;
 let TAB_NAME   = localStorage.getItem('xb_tab')  || DEF_TAB;
 let SCRIPT_URL = localStorage.getItem('xb_url')  || 'https://script.google.com/macros/s/AKfycbzQUdruS0f1h9ctm8jbWKSyIzJyuF5_oZ58lguSgB3GZrUjh380U9EwO8U8-obLpnEu/exec';
 
-let all=[], shown=[], editR=null, delR=null, sC='', sA=true;
+let all=[], shown=[], editR=null, delR=null, delNm='', sC='', sA=true;
 let reloadTimer=null, activeType='', activeTaste='', activeOrigin='', activeRoast='', activeRoaster='', activeProcess='';
 
 const TASTES = ['Fruity','Floral','Nutty/Cocolately','Bold/Bitter','Bitter&Fruity','Highly Complex'];
@@ -1721,6 +1764,8 @@ function getImageUrl(row) {
 // ── Page nav ──
 function goPage(p) {
   if(p==='admin' && !isAdmin){ pendingAction='admin'; openLoginModal(); return; }
+  // Require user login to enter Admin Console
+  if(p==='admin' && isAdmin && !currentUser){ openUserLogin(); return; }
   ['cat','admin'].forEach(id => {
     document.getElementById('page'+cap(id)).classList.toggle('active', p===id);
     document.getElementById('tab'+cap(id)).classList.toggle('active', p===id);
@@ -1866,13 +1911,13 @@ function openLog(){
 }
 function closeLog(){ document.getElementById('logOv').classList.remove('open'); }
 function loadLog(){
-  if(!SCRIPT_URL){ document.getElementById('logBody').innerHTML='<tr><td colspan="5" style="padding:30px;text-align:center;color:var(--lighter)">Set Apps Script URL first</td></tr>'; return; }
-  document.getElementById('logBody').innerHTML='<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--lighter)"><span class="spin"></span>Loading…</td></tr>';
+  if(!SCRIPT_URL){ document.getElementById('logBody').innerHTML='<tr><td colspan="6" style="padding:30px;text-align:center;color:var(--lighter)">Set Apps Script URL first</td></tr>'; return; }
+  document.getElementById('logBody').innerHTML='<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--lighter)"><span class="spin"></span>Loading…</td></tr>';
   const cb='_gl'+Date.now();
   window[cb]=function(res){
     cln(cb,'_glScript');
     if(res.status==='ok'){ logData=res.data||[]; filterLog(); }
-    else document.getElementById('logBody').innerHTML='<tr><td colspan="5" style="padding:30px;text-align:center;color:var(--red)">Failed to load log</td></tr>';
+    else document.getElementById('logBody').innerHTML='<tr><td colspan="6" style="padding:30px;text-align:center;color:var(--red)">Failed to load log</td></tr>';
   };
   inj('_glScript', SCRIPT_URL+'?action=getLog&callback='+cb);
 }
@@ -1883,22 +1928,24 @@ function filterLog(){
   );
   document.getElementById('logCount').textContent=filtered.length+' entries';
   if(!filtered.length){
-    document.getElementById('logBody').innerHTML='<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--lighter)">No entries found</td></tr>';
+    document.getElementById('logBody').innerHTML='<tr><td colspan="6" style="padding:40px;text-align:center;color:var(--lighter)">No entries found</td></tr>';
     return;
   }
-  const fieldColor = f => f==='Status'?'#0071e3':f.includes('Stock')||f.includes('KG')?'var(--green2)':'var(--mid)';
+  const fieldColor = f => f==='Add Bean'?'var(--green2)':f==='Edit Bean'?'#0071e3':f==='Delete Bean'?'var(--red)':f==='Status'?'#0071e3':f.includes('Stock')||f.includes('KG')?'var(--green2)':'var(--mid)';
   document.getElementById('logBody').innerHTML = filtered.map(r=>{
     const diff = parseFloat(r.to) - parseFloat(r.from);
     const arrow = !isNaN(diff) ? (diff>0?'<span style="color:var(--green2)">▲</span>':diff<0?'<span style="color:var(--red)">▼</span>':'') : '';
+    const isBean = r.field==='Add Bean'||r.field==='Edit Bean';
     return `<tr style="border-bottom:1px solid var(--border2)">
       <td style="padding:9px 14px;color:var(--lighter);font-size:11px;white-space:nowrap">${xe(r.timestamp)}</td>
+      <td style="padding:9px 14px;font-size:12px;font-weight:600;color:var(--dark);white-space:nowrap">${xe(r.editedBy||'—')}</td>
       <td style="padding:9px 14px">
         <div style="font-weight:500;color:var(--dark);font-size:12px">${xe(r.itemName)}</div>
         ${r.itemCode?`<div style="font-size:10px;color:var(--accent)">${xe(r.itemCode)}</div>`:''}
       </td>
       <td style="padding:9px 14px;font-size:11px;font-weight:500;color:${fieldColor(r.field)}">${xe(r.field)}</td>
-      <td style="padding:9px 14px;text-align:center;color:var(--light);font-size:12px">${xe(r.from)||'—'}</td>
-      <td style="padding:9px 14px;text-align:center;font-weight:600;color:var(--dark);font-size:12px">${arrow} ${xe(r.to)||'—'}</td>
+      <td style="padding:9px 14px;text-align:center;color:var(--light);font-size:12px">${isBean?'':xe(r.from)||'—'}</td>
+      <td style="padding:9px 14px;text-align:center;font-weight:600;color:var(--dark);font-size:12px">${isBean?'':arrow+' '+(xe(r.to)||'—')}</td>
     </tr>`;
   }).join('');
 }
@@ -2170,6 +2217,7 @@ function logStockChange(rn, field, fromVal, toVal){
     itemName: row['Item Name']||'',
     itemCode: row['Item Code']||'',
     field, from: fromVal||'0', to: toVal||'0',
+    editedBy: currentUser || '—',
     callback: cb
   }));
 }
@@ -2242,6 +2290,8 @@ function updateStickyBar(){
   applyAdminUI();
   setView('quick');
   loadSheet();
+  // Load users in background (no popup — login only required for Admin Console)
+  if(SCRIPT_URL) setTimeout(loadUsers, 600);
 })();
 
 
@@ -2288,6 +2338,92 @@ function loadSheet(silent){
   document.body.appendChild(s);
 }
 function silentReload(){ loadSheet(true); }
+
+// ════════════════════════════════════
+//  USER LOGIN SYSTEM
+// ════════════════════════════════════
+let currentUser = null; // session only — cleared on tab close
+let usersCache  = [];
+
+function openUserLogin(){
+  document.getElementById('ulErr').style.display = 'none';
+  document.getElementById('ulPin').value = '';
+  document.getElementById('userLoginOv').classList.add('open');
+  if(usersCache.length === 0) loadUsers();
+  else populateUserDropdown();
+  setTimeout(()=>document.getElementById('ulUser').focus(), 150);
+}
+
+function loadUsers(){
+  if(!SCRIPT_URL) return;
+  const cb = '_users' + Date.now();
+  window[cb] = function(res){
+    document.getElementById('_usersScript')?.remove();
+    delete window[cb];
+    if(res.status === 'ok'){
+      usersCache = res.data || [];
+      populateUserDropdown();
+    }
+  };
+  const s = document.createElement('script');
+  s.id = '_usersScript';
+  s.src = `${SCRIPT_URL}?action=getAll&sheet=Users&callback=${cb}`;
+  document.body.appendChild(s);
+}
+
+function populateUserDropdown(){
+  const sel = document.getElementById('ulUser');
+  sel.innerHTML = '<option value="">— เลือกชื่อ —</option>';
+  usersCache.forEach(u => {
+    const name = u['Name'] || u['name'] || '';
+    if(name) sel.innerHTML += `<option value="${name}">${name}</option>`;
+  });
+}
+
+function submitUserLogin(){
+  const name = document.getElementById('ulUser').value.trim();
+  const pin  = document.getElementById('ulPin').value.trim();
+  const err  = document.getElementById('ulErr');
+  if(!name){ err.textContent='กรุณาเลือกชื่อ'; err.style.display='block'; return; }
+  if(!pin) { err.textContent='กรุณาใส่ PIN';   err.style.display='block'; return; }
+  const user = usersCache.find(u=>(u['Name']||u['name']||'')===name);
+  const correctPin = user ? String(user['PIN']||user['pin']||'') : '';
+  if(pin !== correctPin){
+    err.textContent = 'PIN ไม่ถูกต้อง กรุณาลองใหม่';
+    err.style.display = 'block';
+    document.getElementById('ulPin').value = '';
+    document.getElementById('ulPin').focus();
+    return;
+  }
+  currentUser = name;
+  err.style.display = 'none';
+  document.getElementById('userLoginOv').classList.remove('open');
+  updateUserBadge();
+  toast(`👋 สวัสดี, ${name}`, 'success');
+  // If user logged in to access Admin Console, navigate there now
+  if(isAdmin) goPage('admin');
+}
+
+function updateUserBadge(){
+  const badge = document.getElementById('userBadge');
+  const nameEl = document.getElementById('userBadgeName');
+  if(!badge) return;
+  if(currentUser){
+    if(nameEl) nameEl.textContent = currentUser;
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function getUserStamp(){
+  if(!currentUser) return '';
+  const now = new Date();
+  const d = `${now.getDate()} ${now.toLocaleString('en',{month:'short'})} ${now.getFullYear()}`;
+  const tm = now.toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+  return `${currentUser} · ${d} ${tm}`;
+}
+
 
 // ════════════════════════════════════
 //  CATALOG
@@ -2764,13 +2900,38 @@ function getFm(){
 }
 function saveBean(){
   const d=getFm(); if(!d['Item Name']){ toast('Item Name is required','error'); return; }
+  // Require user login before saving
+  if(!currentUser){ toast('กรุณา Sign In ก่อนบันทึกข้อมูล','error'); openUserLogin(); return; }
+  d['Last Edited By'] = getUserStamp();
+  // Auto-timestamp: if stock fields have values and date is empty, fill today
+  const hasStock = d['Stock HQ']||d['Stock CTW']||d['Stock K.Boy'];
+  if(hasStock && !d['Latest Stock Update Date']){
+    const _n=new Date();
+    d['Latest Stock Update Date']=`${_n.getFullYear()}-${String(_n.getMonth()+1).padStart(2,'0')}-${String(_n.getDate()).padStart(2,'0')}`;
+    const sdEl=document.getElementById('f_sd'); if(sdEl) sdEl.value=d['Latest Stock Update Date'];
+  }
   const btn=document.getElementById('saveBtn');
   btn.disabled=true; btn.innerHTML='<span class="spin"></span>Saving…';
   const cb='_'+Date.now(), action=editR?'update':'add';
   window[cb]=r=>{
     cln(cb,'js'); btn.disabled=false;
     btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Save';
-    if(r.status==='ok'){ closeFm(); toast((editR?'Updated':'Added')+' successfully','success'); setTimeout(loadSheet,800); }
+    if(r.status==='ok'){
+      // Log the add/edit action to Stock Log
+      const logCb='_blogLog'+Date.now();
+      window[logCb]=function(){ cln(logCb,'_blogScript'); };
+      inj('_blogScript', SCRIPT_URL+'?'+new URLSearchParams({
+        action: 'logStock',
+        itemName: d['Item Name']||'',
+        itemCode: d['Item Code']||'',
+        field: editR ? 'Edit Bean' : 'Add Bean',
+        from: editR ? 'Updated' : '',
+        to: editR ? 'Saved' : 'New',
+        editedBy: currentUser || '—',
+        callback: logCb
+      }));
+      closeFm(); toast((editR?'Updated':'Added')+' successfully','success'); setTimeout(loadSheet,800);
+    }
     else toast(r.message||'Save failed','error');
   };
   const p=new URLSearchParams({action,sheet:TAB_NAME,callback:cb,data:JSON.stringify(d)});
@@ -2781,16 +2942,33 @@ function saveBean(){
 // ── DELETE ──
 function openDel(rn,nm){
   if(!SCRIPT_URL){ toast('Set Apps Script URL in Settings first','error'); openCfg(); return; }
-  delR=rn;
+  delR=rn; delNm=nm;
   document.getElementById('delSub').innerHTML=`<strong>"${nm}"</strong> will be permanently removed from Google Sheets.`;
   document.getElementById('delOv').classList.add('open');
 }
-function closeDel(){ document.getElementById('delOv').classList.remove('open'); delR=null; }
+function closeDel(){ document.getElementById('delOv').classList.remove('open'); delR=null; delNm=''; }
 function doDel(){
   if(!delR) return;
+  const nm = delNm || '';
+  const row = all.find(r=>r._rowNum===delR);
+  const itemCode = row?.['Item Code'] || '';
   const cb='_'+Date.now();
   window[cb]=r=>{ cln(cb,'jd'); closeDel();
-    if(r.status==='ok'){ toast('Deleted','success'); setTimeout(loadSheet,800); }
+    if(r.status==='ok'){
+      // Log the delete action
+      const logCb='_dlog'+Date.now();
+      window[logCb]=function(){ cln(logCb,'_dlogScript'); };
+      inj('_dlogScript', SCRIPT_URL+'?'+new URLSearchParams({
+        action:'logStock',
+        itemName: nm,
+        itemCode: itemCode,
+        field: 'Delete Bean',
+        from: 'Existed', to: 'Deleted',
+        editedBy: currentUser || '—',
+        callback: logCb
+      }));
+      toast('Deleted','success'); setTimeout(loadSheet,800);
+    }
     else toast(r.message||'Delete failed','error');
   };
   inj('jd',`${SCRIPT_URL}?action=delete&sheet=${enc(TAB_NAME)}&row=${delR}&callback=${cb}`);
@@ -2839,14 +3017,30 @@ function editStockCell(el){
     const oldVal = cur;
     row[field] = newVal;
     logStockChange(rn, field, oldVal, newVal);
+
+    // Auto-timestamp stock update date
+    const _now = new Date();
+    const _todayStr = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_now.getDate()).padStart(2,'0')}`;
+    row['Latest Stock Update Date'] = _todayStr;
+
     // Re-render just this cell
     const td = input.parentElement;
     if(td) td.innerHTML = stockCell(newVal, rn, field);
+
+    // Re-render stock updated date cell in same row
+    const _tr = td?.closest('tr');
+    if(_tr){
+      _tr.querySelectorAll('td').forEach(cell=>{
+        const de = cell.querySelector('.date-editable[data-field="Latest Stock Update Date"]');
+        if(de) cell.innerHTML = dateCell(_todayStr, rn, 'Latest Stock Update Date');
+      });
+    }
 
     // Save to Apps Script — send full row with updated field
     const data = {};
     Object.entries(FM).forEach(([id,col])=>{ data[col]=row[col]||''; });
     data[field] = newVal;
+    data['Latest Stock Update Date'] = _todayStr;
     const cb='_sc'+Date.now();
     window[cb]=function(res){
       cln(cb,'_scScript');
