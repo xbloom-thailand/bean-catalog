@@ -363,7 +363,7 @@ select.cat-dd.on { border-color: var(--dark); color: var(--dark); background: va
 .card-name em { font-style: italic; }
 .card-roaster {
   font-size: 11px; font-weight: 500; letter-spacing: .5px;
-  text-transform: uppercase; color: #9a7c5a;
+  color: #9a7c5a;
   margin-top: -4px;
 }
 .card-collab {
@@ -864,9 +864,22 @@ tbody tr:hover td { background: #f9f9f5; }
 .detail-recipe-btn:hover { border-color: var(--dark); color: var(--dark); }
 
 @media(max-width:640px){
-  .detail-body { grid-template-columns: 1fr; gap: 20px; padding: 20px; }
-  .detail-img-wrap { aspect-ratio: 4/3; }
-  .detail-img-name { font-size: 24px; }
+  .detail-ov { align-items: flex-end; }
+  .detail-modal {
+    width: 100% !important;
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%) !important;
+  }
+  .detail-ov.open .detail-modal { transform: translateY(0) !important; }
+  .detail-img-wrap { height: 300px; }
+  .detail-body { grid-template-columns: 1fr; gap: 16px; padding: 16px 18px 32px; }
+  .detail-img-name { font-size: 20px; }
+  .detail-price { font-size: 22px; }
+  .detail-buy-btn { padding: 12px; font-size: 13px; }
+  .detail-spec-grid { grid-template-columns: 1fr 1fr; }
+  .detail-desc { font-size: 13px; line-height: 1.7; }
 }
 
 ::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 2px; }
@@ -935,10 +948,14 @@ tbody tr:hover td { background: #f9f9f5; }
   .card-collab { display: none; } /* hide collab label on mobile */
   .tasting-notes { gap: 3px; flex-wrap: nowrap; overflow: hidden; max-height: 18px; padding: 0; margin: 0; }
   .tnote { font-size: 9px; letter-spacing: .8px; padding: 0; white-space: nowrap; background: none; border: none; color: var(--green2); font-weight: 600; }
-  .card-meta { display: none; } /* hide meta grid on mobile — seen in detail modal */
-  .card-hr { display: none; }
-  .card-foot { padding-top: 6px; flex-wrap: wrap; gap: 4px; }
-  .pack-label { font-size: 9px; }
+  .card-hr { display: block; }
+  .card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 10px; }
+  .meta-row .ml { font-size: 8px; }
+  .meta-row .mv { font-size: 11px; }
+  .card-foot { display: flex; padding-top: 8px; flex-wrap: wrap; gap: 5px; }
+  .pack-label { display: none; }
+  .rbtn { font-size: 9px; padding: 4px 8px; }
+  .card-buy { display: none; }
   .rbtn { font-size: 9px; padding: 4px 8px; }
   .price-badge { font-size: 13px; padding: 3px 7px; bottom: 8px; right: 8px; }
   .nearly-strip { font-size: 8px; padding: 3px 8px; letter-spacing: .5px; }
