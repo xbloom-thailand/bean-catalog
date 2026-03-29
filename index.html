@@ -1045,7 +1045,7 @@ tbody tr:hover td { background: #f9f9f5; }
       <span id="syncTxt">Connecting…</span>
     </div>
     <!-- admin-only: settings — hidden until unlocked -->
-    <button class="btn btn-outline btn-sm admin-only" id="settingsBtn" onclick="openCfg()" style="display:none">
+    <button class="btn btn-outline btn-sm admin-only" id="settingsBtn" onclick="openCfgGuarded()" style="display:none">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
       Settings
     </button>
@@ -1521,40 +1521,6 @@ tbody tr:hover td { background: #f9f9f5; }
   </div>
 </div>
 
-<!-- ══ LOGIN MODAL ══ -->
-<div class="ov" id="loginOv">
-  <div class="modal" style="width:360px;max-width:95vw">
-    <div class="mh">
-      <div class="mt" style="display:flex;align-items:center;gap:8px">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Admin Login
-      </div>
-      <button class="mx" onclick="closeLoginModal()">✕</button>
-    </div>
-    <div class="mb" style="padding:20px 22px">
-      <div class="fi">
-        <label>Password</label>
-        <input id="loginInput" type="password" placeholder="Enter admin password"
-          onkeydown="if(event.key==='Enter') submitLogin()"
-          style="font-size:15px;padding:10px 12px;letter-spacing:2px">
-      </div>
-      <div id="loginErr" style="display:none;margin-top:8px;font-size:12px;color:var(--red)">
-        Incorrect password. Please try again.
-      </div>
-    </div>
-    <div class="mf">
-      <button class="btn btn-outline" onclick="closeLoginModal()">Cancel</button>
-      <button class="btn btn-dark" onclick="submitLogin()">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-        Sign In
-      </button>
-    </div>
-  </div>
-</div>
-
-
-
-
 <!-- ══ USER LOGIN MODAL ══ -->
 <div class="ov" id="userLoginOv" style="z-index:500">
   <div class="modal" style="width:380px;max-width:95vw">
@@ -1763,9 +1729,7 @@ function getImageUrl(row) {
 
 // ── Page nav ──
 function goPage(p) {
-  if(p==='admin' && !isAdmin){ pendingAction='admin'; openLoginModal(); return; }
-  // Require user login to enter Admin Console
-  if(p==='admin' && isAdmin && !currentUser){ openUserLogin(); return; }
+  if(p==='admin' && !isAdmin){ openUserLogin(); return; }
   ['cat','admin'].forEach(id => {
     document.getElementById('page'+cap(id)).classList.toggle('active', p===id);
     document.getElementById('tab'+cap(id)).classList.toggle('active', p===id);
@@ -1778,11 +1742,18 @@ function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
 
 let pendingAction = null;
 
-// ── Config ──
-function openCfg(){
-  pendingAction = 'cfg';
-  openLoginModal();
+const SETTINGS_USERS = ['Admin', 'CLEVEL'];
+
+function openCfgGuarded(){
+  if(!isAdmin || !currentUser){ openUserLogin(); return; }
+  if(!SETTINGS_USERS.includes(currentUser)){
+    toast('ไม่มีสิทธิ์เข้าถึง Settings', 'error'); return;
+  }
+  openCfg();
 }
+
+// ── Config ──
+function openCfg(){ _showCfg(); }
 function _showCfg(){
   document.getElementById('cfgSid').value    = SHEET_ID;
   document.getElementById('cfgTab').value    = TAB_NAME;
@@ -1808,69 +1779,17 @@ let isAdmin = sessionStorage.getItem('xb_admin') === '1';
 
 function toggleAdminLock(){
   if(isAdmin){ lockAdmin(); }
-  else { openLoginModal(); }
+  else { openUserLogin(); }
 }
 
-function openLoginModal(){
-  document.getElementById('loginOv').classList.add('open');
-  setTimeout(()=>document.getElementById('loginInput').focus(), 100);
-}
-function closeLoginModal(){
-  document.getElementById('loginOv').classList.remove('open');
-  document.getElementById('loginInput').value='';
-  document.getElementById('loginErr').style.display='none';
-}
-function submitLogin(){
-  const pw = document.getElementById('loginInput').value.trim();
-  if(!pw) return;
-  if(!SCRIPT_URL){
-    toast('Set Apps Script URL in Settings first','error');
-    return;
-  }
-  // Disable button while verifying
-  const btn = document.querySelector('#loginOv .btn-dark');
-  if(btn){ btn.disabled=true; btn.innerHTML='<span class="spin"></span>Verifying…'; }
+function openLoginModal(){ openUserLogin(); } // legacy alias
+function closeLoginModal(){} // no-op
 
-  const cb = '_vp' + Date.now();
-  window[cb] = function(res){
-    document.getElementById('_vpScript')?.remove();
-    delete window[cb];
-    if(btn){ btn.disabled=false; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Sign In'; }
-
-    if(res.status === 'ok'){
-      const role = res.role; // 'admin' or 'settings'
-      if(role === 'admin'){
-        isAdmin = true;
-        sessionStorage.setItem('xb_admin','1');
-        applyAdminUI();
-        toast('Admin mode enabled','success');
-      } else {
-        toast('Access granted','success');
-      }
-      closeLoginModal();
-      if(pendingAction === 'cfg')      { pendingAction = null; _showCfg(); }
-      else if(pendingAction === 'admin'){ pendingAction = null; goPage('admin'); }
-      else { pendingAction = null; if(role==='admin') goPage('admin'); }
-    } else {
-      document.getElementById('loginErr').style.display='block';
-      document.getElementById('loginInput').value='';
-      document.getElementById('loginInput').focus();
-    }
-  };
-  const s = document.createElement('script');
-  s.id = '_vpScript';
-  s.src = `${SCRIPT_URL}?action=verifyPassword&pw=${encodeURIComponent(pw)}&callback=${cb}`;
-  s.onerror = function(){
-    document.getElementById('_vpScript')?.remove();
-    delete window[cb];
-    if(btn){ btn.disabled=false; btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Sign In'; }
-    toast('Connection failed — cannot verify password','error');
-  };
-  document.body.appendChild(s);
-}
 function lockAdmin(){
   isAdmin = false;
+  currentUser = null;
   sessionStorage.removeItem('xb_admin');
+  updateUserBadge();
   applyAdminUI();
   if(document.getElementById('pageAdmin').classList.contains('active')){
     goPage('cat');
@@ -1878,23 +1797,25 @@ function lockAdmin(){
   toast('Signed out','success');
 }
 function applyAdminUI(){
-  // Admin Console tab — show/hide normally
-  const tabAdmin = document.getElementById('tabAdmin');
-  if(tabAdmin) tabAdmin.style.display = isAdmin ? '' : 'none';
+  const loggedIn = isAdmin && !!currentUser;
 
-  // Settings — show only when admin
+  // Admin Console tab
+  const tabAdmin = document.getElementById('tabAdmin');
+  if(tabAdmin) tabAdmin.style.display = loggedIn ? '' : 'none';
+
+  // Settings — only show when fully logged in
   const settingsBtn = document.getElementById('settingsBtn');
   if(settingsBtn){
-    settingsBtn.style.display = isAdmin ? '' : 'none';
-    settingsBtn.classList.toggle('admin-visible', isAdmin);
+    settingsBtn.style.display = loggedIn ? '' : 'none';
+    settingsBtn.classList.toggle('admin-visible', loggedIn);
   }
 
-  // Lock icon swap
-  document.getElementById('lockIcon').innerHTML = isAdmin
+  // Lock icon
+  document.getElementById('lockIcon').innerHTML = loggedIn
     ? '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/>'
     : '<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>';
-  document.getElementById('lockBtn').title = isAdmin ? 'Sign out of admin' : 'Admin login';
-  document.getElementById('lockBtn').classList.toggle('admin-visible', isAdmin);
+  document.getElementById('lockBtn').title = loggedIn ? 'Sign out' : 'Admin login';
+  document.getElementById('lockBtn').classList.toggle('admin-visible', loggedIn);
 }
 
 
@@ -2396,12 +2317,15 @@ function submitUserLogin(){
     return;
   }
   currentUser = name;
+  isAdmin = true;
+  sessionStorage.setItem('xb_admin','1');
   err.style.display = 'none';
   document.getElementById('userLoginOv').classList.remove('open');
   updateUserBadge();
+  applyAdminUI();
   toast(`👋 สวัสดี, ${name}`, 'success');
-  // If user logged in to access Admin Console, navigate there now
-  if(isAdmin) goPage('admin');
+  // Navigate to Admin Console
+  goPage('admin');
 }
 
 function updateUserBadge(){
@@ -3172,11 +3096,11 @@ function toast(msg,type='success'){
   t.className='toast '+type+' show';
   clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast '+type,3200);
 }
-['cfgOv','fmOv','delOv','loginOv','descOv','logOv','analyticsOv'].forEach(id=>
-  document.getElementById(id)?.addEventListener('click',e=>{ if(e.target===e.currentTarget){ closeCfg(); closeFm(); closeDel(); closeLoginModal(); closeDesc(); }})
+['cfgOv','fmOv','delOv','descOv','logOv','analyticsOv'].forEach(id=>
+  document.getElementById(id)?.addEventListener('click',e=>{ if(e.target===e.currentTarget){ closeCfg(); closeFm(); closeDel(); closeDesc(); }})
 );
 document.getElementById('detailOv').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeDetail(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCfg(); closeFm(); closeDel(); closeLoginModal(); closeDesc(); closeLog(); closeDetail(); closeAnalytics(); }});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCfg(); closeFm(); closeDel(); closeDesc(); closeLog(); closeDetail(); closeAnalytics(); }});
 
 
 // ════ LANGUAGE TOGGLE ════
