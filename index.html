@@ -1038,6 +1038,14 @@ tbody tr:hover td { background: #f9f9f5; }
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
       <span data-i18n="navAdmin" class="nav-admin-full">Admin Console</span><span class="nav-admin-short">Admin</span>
     </button>
+    <button class="ntab admin-only" id="tabPartners" onclick="goPage('partners')" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Partners
+    </button>
+    <button class="ntab admin-only" id="tabPending" onclick="goPage('pending')" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3z"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Pending <span id="pendingBadge" style="display:none;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:10px;margin-left:4px"></span>
+    </button>
   </div>
   <div class="nav-r">
     <div class="sync-wrap">
@@ -1247,6 +1255,109 @@ tbody tr:hover td { background: #f9f9f5; }
   </div>
 </div>
 
+<!-- ══ PARTNERS PAGE ══ -->
+<div class="page" id="pagePartners">
+  <div class="admin-wrap">
+    <div class="admin-topbar">
+      <div>
+        <div class="admin-title">Partners</div>
+        <div style="font-size:11px;color:var(--light);margin-top:2px">Collaboration partner roasters · ข้อมูลบริษัทและผู้ติดต่อ</div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-dark" onclick="openPartnerForm()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Partner
+        </button>
+      </div>
+    </div>
+
+    <!-- Partner cards grid -->
+    <div id="partnerGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:4px">
+      <div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--lighter)">
+        <span class="spin"></span> Loading partners…
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PARTNER FORM MODAL ══ -->
+<div class="ov" id="partnerFmOv">
+  <div class="modal" style="width:640px;max-width:96vw">
+    <div class="mh">
+      <div class="mt" id="partnerFmTitle">Add Partner</div>
+      <button class="mx" onclick="closePartnerForm()">✕</button>
+    </div>
+    <div class="mb" style="padding:20px 22px;display:flex;flex-direction:column;gap:14px">
+
+      <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lighter);display:flex;align-items:center;gap:8px">บริษัท <span style="flex:1;height:1px;background:var(--border2)"></span></div>
+      <div class="field-row fr-2">
+        <div class="fi"><label>Partner Name *</label><input id="pf_name" placeholder="Casa Lapin"></div>
+        <div class="fi"><label>ชื่อบริษัท</label><input id="pf_company" placeholder="บริษัท..."></div>
+      </div>
+      <div class="field-row fr-2">
+        <div class="fi"><label>เลขที่เสียภาษี</label><input id="pf_taxid" placeholder="0-0000-00000-00-0"></div>
+        <div class="fi"><label>เบอร์โทร</label><input id="pf_phone" placeholder="02-xxx-xxxx"></div>
+      </div>
+      <div class="fi"><label>ที่อยู่บริษัท</label><textarea id="pf_address" rows="2" placeholder="เลขที่ อาคาร ถนน แขวง เขต จังหวัด รหัสไปรษณีย์"></textarea></div>
+
+      <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lighter);display:flex;align-items:center;gap:8px;margin-top:4px">ผู้ติดต่อ <span style="flex:1;height:1px;background:var(--border2)"></span></div>
+      <div class="field-row fr-3">
+        <div class="fi"><label>ชื่อผู้ติดต่อ</label><input id="pf_contact" placeholder="คุณ..."></div>
+        <div class="fi"><label>อีเมล</label><input id="pf_email" type="email" placeholder="name@cafe.com"></div>
+        <div class="fi"><label>เบอร์ผู้ติดต่อ</label><input id="pf_cphone" placeholder="08x-xxx-xxxx"></div>
+      </div>
+
+      <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lighter);display:flex;align-items:center;gap:8px;margin-top:4px">เอกสาร <span style="flex:1;height:1px;background:var(--border2)"></span></div>
+      <div class="fi"><label>สัญญา Partner (Google Drive link)</label><input id="pf_contract" placeholder="https://drive.google.com/…"></div>
+      <div class="fi"><label>หมายเหตุ</label><textarea id="pf_notes" rows="2" placeholder="เพิ่มเติม…"></textarea></div>
+
+    </div>
+    <div class="mf">
+      <button class="btn btn-outline" onclick="closePartnerForm()">Cancel</button>
+      <button class="btn btn-dark" id="partnerSaveBtn" onclick="savePartner()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        Save Partner
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PARTNER DELETE CONFIRM ══ -->
+<div class="ov" id="partnerDelOv">
+  <div class="modal" style="width:360px;max-width:95vw">
+    <div class="dm">
+      <div class="di">🗑</div>
+      <div class="dtt">ลบ Partner นี้?</div>
+      <div class="ds" id="partnerDelSub"></div>
+      <div class="db">
+        <button class="btn btn-outline" onclick="closePartnerDel()">Cancel</button>
+        <button class="bdr" onclick="doDelPartner()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PENDING PAGE ══ -->
+<div class="page" id="pagePending">
+  <div class="admin-wrap">
+    <div class="admin-topbar">
+      <div>
+        <div class="admin-title">Pending Submissions</div>
+        <div style="font-size:11px;color:var(--light);margin-top:2px">Partner submissions รอ Approve — ส่งจาก Partner Portal</div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-outline" onclick="loadPending()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Reload
+        </button>
+      </div>
+    </div>
+    <div id="pendingList" style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+      <div style="padding:60px;text-align:center;color:var(--lighter)"><span class="spin"></span> Loading…</div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ SETTINGS MODAL ══ -->
 <div class="ov" id="cfgOv">
   <div class="cfg-box">
@@ -1390,6 +1501,18 @@ tbody tr:hover td { background: #f9f9f5; }
 
     <!-- TAB 2: Coffee Details -->
     <div class="form-tab-content" id="ftc2">
+      <div class="field-row fr-2">
+        <div class="fi">
+          <label>Partner Roaster</label>
+          <select id="f_partner">
+            <option value="">— ไม่มี / XB Bean —</option>
+          </select>
+        </div>
+        <div class="fi">
+          <label data-i18n="labelRoaster">Roaster</label>
+          <input id="f_ro" placeholder="Roaster name">
+        </div>
+      </div>
       <div class="field-row fr-3">
         <div class="fi">
           <label data-i18n="labelOrigin">Origin</label>
@@ -1405,10 +1528,6 @@ tbody tr:hover td { background: #f9f9f5; }
         </div>
       </div>
       <div class="field-row fr-3">
-        <div class="fi">
-          <label data-i18n="labelRoaster">Roaster</label>
-          <input id="f_ro" placeholder="Roaster name">
-        </div>
         <div class="fi">
           <label data-i18n="labelFarm">Farm</label>
           <input id="f_farm" placeholder="ชื่อฟาร์ม / Farm name…">
@@ -1697,7 +1816,8 @@ const FM = {
   f_rl:'Roasting Level',f_el:'Elevation',f_pm:'Process Method',
   f_or:'Origin',f_va:'Varieties',f_hl:'Hot Recipe Link',
   f_hi:'Hot Recipe ID',f_col:'Cold Recipe Link',
-  f_ci:'Cold Recipe ID',f_gl:'Graphic Link',f_desc:'Bean Description',f_farm:'Farm',f_shopee:'Shopee Link',f_line:'Line Link', f_showcat:'Show in Catalog'
+  f_ci:'Cold Recipe ID',f_gl:'Graphic Link',f_desc:'Bean Description',f_farm:'Farm',f_shopee:'Shopee Link',f_line:'Line Link', f_showcat:'Show in Catalog',
+  f_partner:'Partner'
 };
 
 // ════════════════════════════════════
@@ -1729,13 +1849,15 @@ function getImageUrl(row) {
 
 // ── Page nav ──
 function goPage(p) {
-  if(p==='admin' && !isAdmin){ openUserLogin(); return; }
-  ['cat','admin'].forEach(id => {
-    document.getElementById('page'+cap(id)).classList.toggle('active', p===id);
-    document.getElementById('tab'+cap(id)).classList.toggle('active', p===id);
+  if((p==='admin'||p==='partners'||p==='pending') && !isAdmin){ openUserLogin(); return; }
+  ['cat','admin','partners','pending'].forEach(id => {
+    document.getElementById('page'+cap(id))?.classList.toggle('active', p===id);
+    document.getElementById('tab'+cap(id))?.classList.toggle('active', p===id);
   });
   if (p==='cat') renderCards();
   if (p==='admin'){ applyFilter(); updateStickyBar(); }
+  if (p==='partners'){ loadPartners(); }
+  if (p==='pending'){ loadPending(); }
   if (p==='cat'){ const b=document.getElementById('stickyBar'); if(b) b.style.display='none'; }
 }
 function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
@@ -1791,7 +1913,9 @@ function lockAdmin(){
   sessionStorage.removeItem('xb_admin');
   updateUserBadge();
   applyAdminUI();
-  if(document.getElementById('pageAdmin').classList.contains('active')){
+  if(document.getElementById('pageAdmin').classList.contains('active') ||
+     document.getElementById('pagePartners').classList.contains('active') ||
+     document.getElementById('pagePending').classList.contains('active')){
     goPage('cat');
   }
   toast('Signed out','success');
@@ -1802,6 +1926,10 @@ function applyAdminUI(){
   // Admin Console tab
   const tabAdmin = document.getElementById('tabAdmin');
   if(tabAdmin) tabAdmin.style.display = loggedIn ? '' : 'none';
+  const tabPartners = document.getElementById('tabPartners');
+  if(tabPartners) tabPartners.style.display = loggedIn ? '' : 'none';
+  const tabPending = document.getElementById('tabPending');
+  if(tabPending) tabPending.style.display = loggedIn ? '' : 'none';
 
   // Settings — only show when fully logged in
   const settingsBtn = document.getElementById('settingsBtn');
@@ -2211,8 +2339,8 @@ function updateStickyBar(){
   applyAdminUI();
   setView('quick');
   loadSheet();
-  // Load users in background (no popup — login only required for Admin Console)
-  if(SCRIPT_URL) setTimeout(loadUsers, 600);
+  // Load users + partners in background
+  if(SCRIPT_URL){ setTimeout(loadUsers, 600); setTimeout(loadPartners, 900); setTimeout(()=>{ loadPending(); }, 1200); }
 })();
 
 
@@ -2261,7 +2389,275 @@ function loadSheet(silent){
 function silentReload(){ loadSheet(true); }
 
 // ════════════════════════════════════
-//  USER LOGIN SYSTEM
+//  PARTNERS
+// ════════════════════════════════════
+const PARTNERS_SHEET = 'Partners';
+const PFM = {
+  pf_name:'Partner Name', pf_company:'Company Name', pf_taxid:'Tax ID',
+  pf_address:'Address', pf_phone:'Phone', pf_contact:'Contact Name',
+  pf_email:'Email', pf_cphone:'Contact Phone',
+  pf_contract:'Contract Link', pf_notes:'Notes'
+};
+let partnersData = [];
+let editPartnerR = null;
+let delPartnerR  = null;
+
+function loadPartners(cb){
+  if(!SCRIPT_URL) return;
+  const cbName = '_pt'+Date.now();
+  window[cbName] = function(res){
+    document.getElementById('_ptScript')?.remove();
+    delete window[cbName];
+    if(res.status==='ok'){
+      partnersData = res.data || [];
+      renderPartnerGrid();
+      populatePartnerDropdown();
+      if(cb) cb();
+    }
+  };
+  const s=document.createElement('script');
+  s.id='_ptScript';
+  s.src=`${SCRIPT_URL}?action=getAll&sheet=${encodeURIComponent(PARTNERS_SHEET)}&callback=${cbName}`;
+  document.body.appendChild(s);
+}
+
+function populatePartnerDropdown(){
+  const sel = document.getElementById('f_partner');
+  if(!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— ไม่มี / XB Bean —</option>';
+  partnersData.forEach(p=>{
+    const n = p['Partner Name']||'';
+    if(n) sel.innerHTML += `<option value="${n}">${n}</option>`;
+  });
+  sel.value = cur;
+}
+
+function renderPartnerGrid(){
+  const grid = document.getElementById('partnerGrid');
+  if(!grid) return;
+  if(!partnersData.length){
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:60px;text-align:center;color:var(--lighter)">
+      <div style="font-size:32px;margin-bottom:12px;opacity:.3">🤝</div>
+      <div>ยังไม่มี Partner — กด Add Partner เพื่อเพิ่ม</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = partnersData.map(p=>{
+    const rn = p._rowNum;
+    const nm = p['Partner Name']||'—';
+    const co = p['Company Name']||'';
+    const ct = p['Contact Name']||'';
+    const em = p['Email']||'';
+    const ph = p['Contact Phone']||p['Phone']||'';
+    const contract = p['Contract Link']||'';
+    const hasContract = contract && contract.startsWith('http');
+    return `<div style="background:var(--white);border:1px solid var(--border2);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div style="font-size:16px;font-weight:600;color:var(--dark)">${xe(nm)}</div>
+          ${co?`<div style="font-size:11px;color:var(--light);margin-top:2px">${xe(co)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0">
+          ${hasContract?`<a href="${xe(contract)}" target="_blank" class="btn btn-outline" style="padding:5px 10px;font-size:11px;text-decoration:none;display:inline-flex;align-items:center;gap:4px">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            สัญญา
+          </a>`:''}
+          <button class="ab" onclick="openPartnerForm(${rn})" title="Edit">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+          </button>
+          <button class="ab d" onclick="openPartnerDel(${rn},'${xe(nm)}')" title="Delete">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6 18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;font-size:12px">
+        ${ct?`<div><span style="color:var(--lighter);font-size:10px">ผู้ติดต่อ</span><div style="color:var(--dark);margin-top:1px">${xe(ct)}</div></div>`:''}
+        ${em?`<div><span style="color:var(--lighter);font-size:10px">อีเมล</span><div style="color:var(--dark);margin-top:1px"><a href="mailto:${xe(em)}" style="color:#0071e3;text-decoration:none">${xe(em)}</a></div></div>`:''}
+        ${ph?`<div><span style="color:var(--lighter);font-size:10px">เบอร์</span><div style="color:var(--dark);margin-top:1px">${xe(ph)}</div></div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openPartnerForm(rn){
+  editPartnerR = rn || null;
+  document.getElementById('partnerFmTitle').textContent = rn ? 'Edit Partner' : 'Add Partner';
+  document.getElementById('partnerSaveBtn').innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Save Partner';
+  // Clear / fill form
+  Object.keys(PFM).forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  if(rn){
+    const p = partnersData.find(r=>r._rowNum===rn);
+    if(p) Object.entries(PFM).forEach(([id,col])=>{ const el=document.getElementById(id); if(el) el.value=p[col]||''; });
+  }
+  document.getElementById('partnerFmOv').classList.add('open');
+  setTimeout(()=>document.getElementById('pf_name').focus(), 100);
+}
+function closePartnerForm(){ document.getElementById('partnerFmOv').classList.remove('open'); editPartnerR=null; }
+
+function savePartner(){
+  const nm = document.getElementById('pf_name').value.trim();
+  if(!nm){ toast('Partner Name is required','error'); return; }
+  if(!SCRIPT_URL){ toast('Set Apps Script URL first','error'); return; }
+  const d = {};
+  Object.entries(PFM).forEach(([id,col])=>{ d[col]=document.getElementById(id)?.value?.trim()||''; });
+  const btn = document.getElementById('partnerSaveBtn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span>Saving…';
+  const cb='_psave'+Date.now(), action=editPartnerR?'update':'add';
+  window[cb]=r=>{
+    cln(cb,'_psaveScript'); btn.disabled=false;
+    btn.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Save Partner';
+    if(r.status==='ok'){
+      closePartnerForm(); toast((editPartnerR?'Updated':'Added')+' partner','success');
+      loadPartners();
+    } else toast(r.message||'Save failed','error');
+  };
+  const p=new URLSearchParams({action,sheet:PARTNERS_SHEET,callback:cb,data:JSON.stringify(d)});
+  if(editPartnerR) p.set('row',editPartnerR);
+  inj('_psaveScript', SCRIPT_URL+'?'+p);
+}
+
+function openPartnerDel(rn,nm){
+  delPartnerR=rn;
+  document.getElementById('partnerDelSub').innerHTML=`<strong>"${nm}"</strong> จะถูกลบออกจาก Google Sheets`;
+  document.getElementById('partnerDelOv').classList.add('open');
+}
+function closePartnerDel(){ document.getElementById('partnerDelOv').classList.remove('open'); delPartnerR=null; }
+function doDelPartner(){
+  if(!delPartnerR) return;
+  const cb='_pdel'+Date.now();
+  window[cb]=r=>{ cln(cb,'_pdelScript'); closePartnerDel();
+    if(r.status==='ok'){ toast('Deleted','success'); loadPartners(); }
+    else toast(r.message||'Delete failed','error');
+  };
+  inj('_pdelScript',`${SCRIPT_URL}?action=delete&sheet=${encodeURIComponent(PARTNERS_SHEET)}&row=${delPartnerR}&callback=${cb}`);
+}
+
+
+// ════════════════════════════════════
+//  PENDING SUBMISSIONS
+// ════════════════════════════════════
+const PENDING_SHEET_NAME = 'Pending';
+let pendingData = [];
+
+function loadPending(){
+  if(!SCRIPT_URL) return;
+  const list = document.getElementById('pendingList');
+  if(list) list.innerHTML = '<div style="padding:60px;text-align:center;color:var(--lighter)"><span class="spin"></span> Loading…</div>';
+  const cb = '_pend'+Date.now();
+  window[cb] = function(res){
+    document.getElementById('_pendScript')?.remove();
+    delete window[cb];
+    if(res.status==='ok'){
+      pendingData = res.data || [];
+      renderPendingList();
+      updatePendingBadge();
+    }
+  };
+  const s = document.createElement('script');
+  s.id = '_pendScript';
+  s.src = `${SCRIPT_URL}?action=getAll&sheet=${encodeURIComponent(PENDING_SHEET_NAME)}&callback=${cb}`;
+  document.body.appendChild(s);
+}
+
+function updatePendingBadge(){
+  const count = pendingData.filter(p=>(p['Status']||'').trim()==='Pending').length;
+  const badge = document.getElementById('pendingBadge');
+  if(badge){
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'inline' : 'none';
+  }
+}
+
+function renderPendingList(){
+  const list = document.getElementById('pendingList');
+  if(!list) return;
+  const items = pendingData;
+  if(!items.length){
+    list.innerHTML = `<div style="padding:60px;text-align:center;color:var(--lighter)">
+      <div style="font-size:32px;margin-bottom:12px;opacity:.3">📬</div>
+      <div>ไม่มี submission รอ Approve</div>
+    </div>`;
+    return;
+  }
+  list.innerHTML = items.map(p=>{
+    const rn = p._rowNum;
+    const status = (p['Status']||'').trim();
+    const isPending = status === 'Pending';
+    const statusColor = isPending ? 'var(--orange)' : status==='Approved' ? 'var(--green2)' : 'var(--red)';
+    const statusBg    = isPending ? 'var(--gold-bg)' : status==='Approved' ? 'var(--green-bg)' : 'var(--red-bg)';
+    return `<div style="background:var(--white);border:1px solid ${isPending?'rgba(255,149,0,.3)':'var(--border2)'};border-radius:12px;overflow:hidden">
+      <!-- Header row -->
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="background:${statusBg};color:${statusColor};font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:20px">${xe(status)}</span>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:var(--dark)">${xe(p['Item Name']||'—')}</div>
+            <div style="font-size:11px;color:var(--lighter);margin-top:1px">จาก <strong>${xe(p['Partner Name']||'—')}</strong> · ${xe(p['Sender Name']||'')} · ${xe(p['Submitted At']||'')}</div>
+          </div>
+        </div>
+        ${isPending ? `
+        <div style="display:flex;gap:8px;flex-shrink:0">
+          <button class="btn btn-outline" style="color:var(--red);border-color:rgba(192,48,48,.3)" onclick="rejectPending(${rn},'${xe(p['Item Name']||'')}')">
+            ✕ Reject
+          </button>
+          <button class="btn btn-dark" style="background:var(--green2)" onclick="approvePending(${rn},'${xe(p['Item Name']||'')}')">
+            ✓ Approve → Bean Lists
+          </button>
+        </div>` : ''}
+      </div>
+      <!-- Details grid -->
+      <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 20px;font-size:12px">
+        ${[
+          ['Origin', p['Origin']], ['Farm', p['Farm']],
+          ['Roast Level', p['Roasting Level']], ['Process', p['Process Method']],
+          ['Varieties', p['Varieties']], ['Elevation', p['Elevation']],
+          ['Tasting Notes', p['Tasting Notes']],
+          ['Collab Type', p['Collab Type']], ['Price/KG', p['Price Per KG']],
+        ].filter(([,v])=>v).map(([l,v])=>`
+          <div><div style="font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--lighter);margin-bottom:2px">${l}</div>
+          <div style="color:var(--dark2)">${xe(String(v))}</div></div>
+        `).join('')}
+      </div>
+      ${p['Bean Description'] ? `<div style="padding:0 20px 14px;font-size:12px;color:var(--mid);line-height:1.7;border-top:1px solid var(--border2);padding-top:12px;margin-top:-2px">${xe(p['Bean Description'])}</div>` : ''}
+      <!-- Links row -->
+      <div style="padding:10px 20px;border-top:1px solid var(--border2);display:flex;gap:8px;flex-wrap:wrap">
+        ${p['Hot Recipe Link'] ? `<a href="${xe(p['Hot Recipe Link'])}" target="_blank" class="rl">☕ Hot Recipe</a>` : ''}
+        ${p['Cold Recipe Link'] ? `<a href="${xe(p['Cold Recipe Link'])}" target="_blank" class="rl">🧊 Cold Recipe</a>` : ''}
+        ${p['Brand Guideline'] ? `<a href="${xe(p['Brand Guideline'])}" target="_blank" class="rl">📋 Brand Guide</a>` : ''}
+        ${p['Graphic Link'] ? `<a href="${xe(p['Graphic Link'])}" target="_blank" class="rl">🎨 Graphic</a>` : ''}
+        ${p['Logo Link'] ? `<a href="${xe(p['Logo Link'])}" target="_blank" class="rl">🏷️ Logo</a>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function approvePending(rn, name){
+  if(!confirm(`Approve "${name}" และเพิ่มลง Bean Lists?`)) return;
+  const cb = '_papp'+Date.now();
+  window[cb] = r=>{
+    cln(cb,'_pappScript');
+    if(r.status==='ok'){
+      toast(`✅ Approved: ${name}`, 'success');
+      loadPending(); setTimeout(loadSheet, 1000);
+    } else toast(r.message||'Approve failed','error');
+  };
+  inj('_pappScript', SCRIPT_URL+'?'+new URLSearchParams({action:'approvePending',row:rn,callback:cb}));
+}
+
+function rejectPending(rn, name){
+  if(!confirm(`Reject "${name}"?`)) return;
+  const cb = '_prej'+Date.now();
+  window[cb] = r=>{
+    cln(cb,'_prejScript');
+    if(r.status==='ok'){
+      toast(`Rejected: ${name}`, 'success');
+      loadPending();
+    } else toast(r.message||'Reject failed','error');
+  };
+  inj('_prejScript', SCRIPT_URL+'?'+new URLSearchParams({action:'rejectPending',row:rn,callback:cb}));
+}
+
 // ════════════════════════════════════
 let currentUser = null; // session only — cleared on tab close
 let usersCache  = [];
@@ -3096,11 +3492,11 @@ function toast(msg,type='success'){
   t.className='toast '+type+' show';
   clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast '+type,3200);
 }
-['cfgOv','fmOv','delOv','descOv','logOv','analyticsOv'].forEach(id=>
-  document.getElementById(id)?.addEventListener('click',e=>{ if(e.target===e.currentTarget){ closeCfg(); closeFm(); closeDel(); closeDesc(); }})
+['cfgOv','fmOv','delOv','descOv','logOv','analyticsOv','partnerFmOv','partnerDelOv'].forEach(id=>
+  document.getElementById(id)?.addEventListener('click',e=>{ if(e.target===e.currentTarget){ closeCfg(); closeFm(); closeDel(); closeDesc(); closePartnerForm(); closePartnerDel(); }})
 );
 document.getElementById('detailOv').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeDetail(); });
-document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCfg(); closeFm(); closeDel(); closeDesc(); closeLog(); closeDetail(); closeAnalytics(); }});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCfg(); closeFm(); closeDel(); closeDesc(); closeLog(); closeDetail(); closeAnalytics(); closePartnerForm(); closePartnerDel(); }});
 
 
 // ════ LANGUAGE TOGGLE ════
