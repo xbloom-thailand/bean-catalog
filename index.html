@@ -870,6 +870,18 @@ tbody tr:hover td { background: #f9f9f5; }
 }
 
 ::-webkit-scrollbar-thumb { background: var(--lighter); border-radius: 2px; }
+/* Show in Catalog toggle */
+.cat-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 5px;
+  cursor: pointer; font-size: 13px; line-height: 1;
+  border: 1px solid var(--border); background: var(--white);
+  transition: all .15s; color: var(--lighter);
+  padding: 0; font-family: inherit;
+}
+.cat-toggle:hover { border-color: var(--accent); }
+.cat-toggle.on { border-color: var(--accent); background: rgba(0,113,227,.08); }
+
 .lang-toggle{display:inline-flex;align-items:center;justify-content:center;width:40px;height:32px;border-radius:6px;border:1px solid var(--border);background:var(--white);font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--mid);cursor:pointer;font-family:inherit;transition:all .15s;flex-shrink:0;}
 .lang-toggle:hover{border-color:var(--dark2);color:var(--dark);}
 .lang-toggle.th{background:var(--dark);border-color:var(--dark);color:#fff;}
@@ -1620,7 +1632,7 @@ const FM = {
   f_rl:'Roasting Level',f_el:'Elevation',f_pm:'Process Method',
   f_or:'Origin',f_va:'Varieties',f_hl:'Hot Recipe Link',
   f_hi:'Hot Recipe ID',f_col:'Cold Recipe Link',
-  f_ci:'Cold Recipe ID',f_gl:'Graphic Link',f_desc:'Bean Description',f_farm:'Farm',f_shopee:'Shopee Link',f_line:'Line Link'
+  f_ci:'Cold Recipe ID',f_gl:'Graphic Link',f_desc:'Bean Description',f_farm:'Farm',f_shopee:'Shopee Link',f_line:'Line Link', f_showcat:'Show in Catalog'
 };
 
 // ════════════════════════════════════
@@ -2295,7 +2307,9 @@ function renderCards(){
   const q=(document.getElementById('cq')?.value||'').toLowerCase();
   const visible=all.filter(r=>{
     if(effectiveStatus(r)==='Cannot Refill') return false;
-    if(!CATALOG_PACKING.includes(r['Packing Type'])) return false;
+    const hasShowCol = all.some(x=>x['Show in Catalog']);
+    if(hasShowCol){ if(r['Show in Catalog']!=='Yes') return false; }
+    else if(!CATALOG_PACKING.includes(r['Packing Type'])) return false;
     if(q&&!r['Item Name']?.toLowerCase().includes(q)&&!r['Item Code']?.toLowerCase().includes(q)) return false;
     if(activeType   && r['Packing Type']!==activeType)      return false;
     if(activeTaste  && r['Taste Type']!==activeTaste)       return false;
@@ -2511,7 +2525,7 @@ function renderTable(){
     // col order: # status code name image packing collab taste price hq ctw bh stockUpdated beanKG refillDate roaster roast elev origin farm process notes desc recipe shopee line actions
     const grpHl = rowHighlightClass(first);
     html += `<tr class="grp-row ${grpHl}" onclick="toggleGroup('${gid}')">
-      <td><span class="grp-chevron open" id="chv_${gid}">›</span></td>
+      <td><span class="grp-chevron" id="chv_${gid}">›</span></td>
       <td>${sBadge(effectiveStatus(first))}</td>
       <td class="tdim" style="font-size:10px">${rows.length} packing${rows.length>1?'s':''}</td>
       <td class="tname" style="font-weight:700;color:var(--dark)">${xe(name)}</td>
@@ -2560,7 +2574,7 @@ function renderTable(){
       const notes=(r['Tasting Notes']||'').split(/[,\/]/).map(n=>n.trim()).filter(Boolean).slice(0,3).join(' / ');
 
       const es=effectiveStatus(r), hl=rowHighlightClass(r);
-      html += `<tr class="child-${gid} child-row ${hl}">
+      html += `<tr class="child-${gid} child-row hidden ${hl}">
         <td class="tn">${i+1}</td>
         <td onclick="quickStatusEdit(${rn},'${r.Status||'In Stock'}')" title="Click to cycle status" style="cursor:pointer">${sBadge(es)}</td>
         <td class="tcode">${xe(r['Item Code'])||'—'}</td>
@@ -2588,6 +2602,7 @@ function renderTable(){
         <td class="col-full">${r['Shopee Link']?`<a href="${xe(r['Shopee Link'])}" target="_blank" class="rl" style="color:#ee4d2d;border-color:rgba(238,77,45,.2)">🛒</a>`:'<span class="tdim">—</span>'}</td>
         <td class="col-full">${r['Line Link']?`<a href="${xe(r['Line Link'])}" target="_blank" class="rl" style="color:#06c755;border-color:rgba(6,199,85,.2)">💬</a>`:'<span class="tdim">—</span>'}</td>
         <td><div class="acts">
+          <button class="cat-toggle ${r['Show in Catalog']==='Yes'?'on':''}" onclick="toggleShowCatalog(${rn})" title="Show in Catalog">${r['Show in Catalog']==='Yes'?'&#128065;':'&#128683;'}</button>
           <button class="ab" onclick="openEdit(${rn})" title="Edit">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
           </button>
@@ -3179,6 +3194,33 @@ function applyLang(){
   // Analytics modal title
   const anaT = document.querySelector('#analyticsOv .mt');
   if(anaT) anaT.textContent = t('analyticsTitle');
+}
+
+
+
+// ── SHOW IN CATALOG TOGGLE ──
+function toggleShowCatalog(rn){
+  if(!SCRIPT_URL){ toast('Set Apps Script URL first','error'); return; }
+  const row = all.find(r=>r._rowNum===rn);
+  if(!row) return;
+  const newVal = row['Show in Catalog']==='Yes' ? 'No' : 'Yes';
+  row['Show in Catalog'] = newVal;
+  const data = {};
+  Object.entries(FM).forEach(([id,col])=>{ data[col]=row[col]||''; });
+  data['Show in Catalog'] = newVal;
+  const cb='_sc'+Date.now();
+  window[cb]=function(res){
+    cln(cb,'_scSave');
+    if(res.status==='ok'){
+      toast((newVal==='Yes'?'Showing':'Hidden')+' in catalog','success');
+      renderTable();
+    } else {
+      row['Show in Catalog'] = newVal==='Yes'?'No':'Yes';
+      toast('Save failed','error');
+    }
+  };
+  inj('_scSave', SCRIPT_URL+'?'+new URLSearchParams({action:'update',sheet:TAB_NAME,callback:cb,data:JSON.stringify(data),row:rn}));
+  renderTable();
 }
 
 </script>
