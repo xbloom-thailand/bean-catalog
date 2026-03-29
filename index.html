@@ -905,17 +905,19 @@ tbody tr:hover td { background: #f9f9f5; }
 @media (max-width: 640px) {
 
   /* ── Nav ── */
-  nav { padding: 0 16px; gap: 0; height: 48px; }
-  .nav-brand { margin-right: 12px; }
-  .nav-brand-xbloom, .nav-brand-thailand { font-size: 15px; }
-  .nav-brand-sep { margin: 0 8px; height: 14px; }
-  .nav-tabs { gap: 0; }
-  .ntab { padding: 0 10px; font-size: 11px; gap: 4px; height: 48px; }
+  nav { padding: 0 14px; gap: 0; height: 48px; }
+  .nav-brand { margin-right: 8px; }
+  .nav-brand-xbloom { font-size: 15px; }
+  .nav-brand-sep { display: none; }
+  .nav-brand-thailand { display: none; }
+  .nav-tabs { gap: 0; flex: 1; }
+  .ntab { padding: 0 12px; font-size: 12px; gap: 4px; height: 48px; }
   .ntab svg { display: none; }
-  .nav-r { gap: 6px; }
+  .nav-r { gap: 5px; }
   .sync-wrap { display: none; }
   .btn-sm { padding: 5px 9px; font-size: 11px; }
-  .lang-toggle { width: 36px; height: 28px; font-size: 10px; }
+  .lang-toggle { width: 34px; height: 28px; font-size: 10px; }
+  #settingsBtn { display: none !important; } /* hide settings in mobile nav — use admin console */
 
   /* ── Hero ── */
   .cat-hero { padding: 24px 16px 20px; }
