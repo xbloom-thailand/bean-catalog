@@ -103,7 +103,7 @@ nav {
 .nav-brand-thailand {
   font-family: 'Quincy CF', 'Libre Baskerville', Georgia, serif;
   font-size: 19px; font-weight: 400; font-style: normal;
-  color: rgba(255,255,255,.7); letter-spacing: -.3px; line-height: 1;
+  color: #fff; letter-spacing: -.3px; line-height: 1;
 }
 .nav-tabs { display: flex; gap: 2px; flex: 1; }
 .ntab {
@@ -121,7 +121,8 @@ nav {
 .ntab svg { opacity: .5; }
 .ntab.active svg { opacity: 1; }
 
-.nav-r { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+.nav-admin-short { display: none; }
+.nav-r { margin-left: auto; display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
 .sync-wrap {
   display: flex; align-items: center; gap: 5px;
   font-size: 11px; color: rgba(255,255,255,.6);
@@ -918,19 +919,21 @@ tbody tr:hover td { background: #f9f9f5; }
 @media (max-width: 640px) {
 
   /* ── Nav ── */
-  nav { padding: 0 14px; gap: 0; height: 48px; }
-  .nav-brand { margin-right: 8px; }
-  .nav-brand-xbloom { font-size: 15px; }
-  .nav-brand-sep { display: inline-block; margin: 0 7px; opacity: .2; }
-  .nav-brand-thailand { font-size: 15px; color: #fff; opacity: 1; }
-  .nav-tabs { gap: 0; flex: 1; }
-  .ntab { padding: 0 10px; font-size: 12px; gap: 4px; height: 48px; }
+  nav { padding: 0 12px; gap: 0; height: 48px; }
+  .nav-brand { margin-right: 6px; flex-shrink: 0; }
+  .nav-brand-xbloom { font-size: 14px; }
+  .nav-brand-sep { display: inline-block; margin: 0 6px; opacity: .25; }
+  .nav-brand-thailand { font-size: 13px; color: #fff; }
+  .nav-tabs { gap: 0; flex: 1; min-width: 0; overflow: hidden; }
+  .ntab { padding: 0 8px; font-size: 11px; gap: 3px; height: 48px; white-space: nowrap; }
   .ntab svg { display: none; }
-  .nav-r { gap: 5px; }
+  .nav-r { gap: 4px; flex-shrink: 0; }
+  .nav-admin-full { display: none; }
+  .nav-admin-short { display: inline; }
   .sync-wrap { display: none; }
-  .btn-sm { padding: 5px 9px; font-size: 11px; }
-  .lang-toggle { width: 34px; height: 28px; font-size: 10px; }
   #settingsBtn { display: none !important; }
+  #lockBtn { width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; }
+  .lang-toggle { width: 32px; height: 26px; font-size: 10px; }
 
   /* ── Hero ── */
   .cat-hero { padding: 24px 16px 20px; }
@@ -1032,7 +1035,7 @@ tbody tr:hover td { background: #f9f9f5; }
     <!-- admin-only tabs: hidden until unlocked -->
     <button class="ntab admin-only" id="tabAdmin" onclick="goPage('admin')" style="display:none">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-      <span data-i18n="navAdmin">Admin Console</span>
+      <span data-i18n="navAdmin" class="nav-admin-full">Admin Console</span><span class="nav-admin-short">Admin</span>
     </button>
   </div>
   <div class="nav-r">
