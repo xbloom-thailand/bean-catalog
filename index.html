@@ -1501,17 +1501,17 @@ tbody tr:hover td { background: #f9f9f5; }
 
     <!-- TAB 2: Coffee Details -->
     <div class="form-tab-content" id="ftc2">
-      <div class="field-row fr-2">
-        <div class="fi">
-          <label>Partner Roaster</label>
-          <select id="f_partner">
-            <option value="">— ไม่มี / XB Bean —</option>
-          </select>
-        </div>
-        <div class="fi">
-          <label data-i18n="labelRoaster">Roaster</label>
-          <input id="f_ro" placeholder="Roaster name">
-        </div>
+      <div class="fi">
+        <label>Partner Roaster</label>
+        <select id="f_partner" onchange="onPartnerSelect(this.value)">
+          <option value="">— เลือก —</option>
+          <option value="__xb__">xBloom Bean (XB Bean)</option>
+          <option value="__none__">ไม่มี Partner</option>
+        </select>
+      </div>
+      <div class="fi">
+        <label data-i18n="labelRoaster">Roaster <span style="font-weight:400;color:var(--lighter);font-size:10px">— แก้ไขได้</span></label>
+        <input id="f_ro" placeholder="Roaster name">
       </div>
       <div class="field-row fr-3">
         <div class="fi">
@@ -2425,12 +2425,25 @@ function populatePartnerDropdown(){
   const sel = document.getElementById('f_partner');
   if(!sel) return;
   const cur = sel.value;
-  sel.innerHTML = '<option value="">— ไม่มี / XB Bean —</option>';
+  sel.innerHTML = `
+    <option value="">— เลือก —</option>
+    <option value="__xb__">xBloom Bean (XB Bean)</option>
+    <option value="__none__">ไม่มี Partner</option>
+    <option disabled>──────────</option>
+  `;
   partnersData.forEach(p=>{
     const n = p['Partner Name']||'';
     if(n) sel.innerHTML += `<option value="${n}">${n}</option>`;
   });
   sel.value = cur;
+}
+
+function onPartnerSelect(name){
+  const roEl = document.getElementById('f_ro');
+  if(!roEl) return;
+  if(name === '__xb__')   roEl.value = 'xBloom Thailand';
+  else if(name === '__none__') roEl.value = '';
+  else roEl.value = name || '';
 }
 
 function renderPartnerGrid(){
@@ -2606,6 +2619,17 @@ function renderPendingList(){
           </button>
         </div>` : ''}
       </div>
+
+      <!-- Company info row -->
+      ${(p['Company Name']||p['Tax ID']||p['Address']||p['Contact Name']) ? `
+      <div style="padding:10px 20px;background:var(--bg);border-bottom:1px solid var(--border2);display:flex;flex-wrap:wrap;gap:8px 24px;font-size:11px">
+        ${p['Company Name'] ? `<span style="color:var(--mid)">🏢 <strong>${xe(p['Company Name'])}</strong></span>` : ''}
+        ${p['Tax ID'] ? `<span style="color:var(--lighter)">เลขภาษี ${xe(p['Tax ID'])}</span>` : ''}
+        ${p['Contact Name'] ? `<span style="color:var(--mid)">👤 ${xe(p['Contact Name'])}</span>` : ''}
+        ${p['Sender Email'] ? `<span style="color:var(--mid)">✉️ ${xe(p['Sender Email'])}</span>` : ''}
+        ${p['Contact Phone']||p['Sender Phone'] ? `<span style="color:var(--mid)">📞 ${xe(p['Contact Phone']||p['Sender Phone'])}</span>` : ''}
+        ${p['Address'] ? `<span style="color:var(--lighter)">📍 ${xe(p['Address'])}</span>` : ''}
+      </div>` : ''}
       <!-- Details grid -->
       <div style="padding:16px 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 20px;font-size:12px">
         ${[
@@ -2613,7 +2637,7 @@ function renderPendingList(){
           ['Roast Level', p['Roasting Level']], ['Process', p['Process Method']],
           ['Varieties', p['Varieties']], ['Elevation', p['Elevation']],
           ['Tasting Notes', p['Tasting Notes']],
-          ['Collab Type', p['Collab Type']], ['Price/KG', p['Price Per KG']],
+          ['Price / KG', p['Price Per KG'] ? `฿${p['Price Per KG']}` : ''],
         ].filter(([,v])=>v).map(([l,v])=>`
           <div><div style="font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--lighter);margin-bottom:2px">${l}</div>
           <div style="color:var(--dark2)">${xe(String(v))}</div></div>
@@ -2639,7 +2663,9 @@ function approvePending(rn, name){
     cln(cb,'_pappScript');
     if(r.status==='ok'){
       toast(`✅ Approved: ${name}`, 'success');
-      loadPending(); setTimeout(loadSheet, 1000);
+      loadPending();
+      loadPartners(); // refresh Partners tab too
+      setTimeout(loadSheet, 1000);
     } else toast(r.message||'Approve failed','error');
   };
   inj('_pappScript', SCRIPT_URL+'?'+new URLSearchParams({action:'approvePending',row:rn,callback:cb}));
@@ -3216,6 +3242,9 @@ function clrFm(){
 function getFm(){
   const d={};
   Object.entries(FM).forEach(([id,col])=>{ d[col]=document.getElementById(id)?.value?.trim()||''; });
+  // Map internal partner values → clean display names for sheet
+  if(d['Partner']==='__xb__')   d['Partner']='xBloom Thailand';
+  if(d['Partner']==='__none__') d['Partner']='';
   return d;
 }
 function saveBean(){
