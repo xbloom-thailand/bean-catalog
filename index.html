@@ -1102,7 +1102,7 @@ tbody tr:hover td { background: #f9f9f5; }
 
     <div class="stats">
       <div class="stat"><div class="sv blue" id="sT">—</div><div class="sl" data-i18n="statTotal">Total</div></div>
-      <div class="stat"><div class="sv green" id="sA">—</div><div class="sl" data-i18n="statActive">Active</div></div>
+      <div class="stat"><div class="sv green" id="sA">—</div><div class="sl" data-i18n="statActive">In Stock</div></div>
       <div class="stat"><div class="sv orange" id="sN">—</div><div class="sl" data-i18n="statNearlyEmpty">Nearly Empty</div></div>
       <div class="stat"><div class="sv red" id="sC">—</div><div class="sl" data-i18n="statCannotRefill">Cannot Refill</div></div>
       <div class="stat"><div class="sv" id="sX">—</div><div class="sl" data-i18n="statXB">XB Bean</div></div>
@@ -1117,7 +1117,7 @@ tbody tr:hover td { background: #f9f9f5; }
       <div class="asep"></div>
       <select class="apf" id="afs" onchange="applyFilter()">
         <option value="">Status</option>
-        <option>Active</option><option>Nearly Empty</option><option>Cannot Refill</option>
+        <option>In Stock</option><option>Nearly Empty</option><option>Cannot Refill</option>
       </select>
       <select class="apf" id="afp" onchange="applyFilter()">
         <option value="">Packing</option>
@@ -1227,7 +1227,7 @@ tbody tr:hover td { background: #f9f9f5; }
       <div class="field-row fr-13">
         <div class="fi">
           <label data-i18n="labelStatus">Status</label>
-          <select id="f_st"><option>Active</option><option>Nearly Empty</option><option>Cannot Refill</option></select>
+          <select id="f_st"><option>In Stock</option><option>Nearly Empty</option><option>Cannot Refill</option></select>
         </div>
         <div class="fi">
           <label data-i18n="labelItemName">Item Name *</label>
@@ -2117,7 +2117,7 @@ function setView(v){
 }
 
 // ── 2) QUICK STATUS EDIT ──
-const STATUS_OPTS = ['Active','Nearly Empty','Cannot Refill'];
+const STATUS_OPTS = ['In Stock','Nearly Empty','Cannot Refill'];
 function quickStatusEdit(rn, cur){
   if(!SCRIPT_URL){ toast('Set Apps Script URL first','error'); return; }
   const row = all.find(r=>r._rowNum===rn);
@@ -2562,7 +2562,7 @@ function renderTable(){
       const es=effectiveStatus(r), hl=rowHighlightClass(r);
       html += `<tr class="child-${gid} child-row ${hl}">
         <td class="tn">${i+1}</td>
-        <td onclick="quickStatusEdit(${rn},'${r.Status||'Active'}')" title="Click to cycle status" style="cursor:pointer">${sBadge(es)}</td>
+        <td onclick="quickStatusEdit(${rn},'${r.Status||'In Stock'}')" title="Click to cycle status" style="cursor:pointer">${sBadge(es)}</td>
         <td class="tcode">${xe(r['Item Code'])||'—'}</td>
         <td class="tname" title="${xe(r['Item Name']||'')}">—</td>
         <td>${thumbHtml}</td>
@@ -2622,7 +2622,7 @@ function effectiveStatus(r){
 }
 
 function sBadge(s){
-  if(s==='Active')       return `<span class="b ba">Active</span>`;
+  if(s==='In Stock')       return `<span class="b ba">In Stock</span>`;
   if(s==='Nearly Empty') return `<span class="b bn">⚠ Nearly Empty</span>`;
   if(s==='Cannot Refill')return `<span class="b bc">Cannot Refill</span>`;
   return `<span class="tdim">${s||'—'}</span>`;
@@ -2645,7 +2645,7 @@ function updateStats(){
   const groups = {};
   all.forEach(r=>{ const n=r['Item Name']||'—'; if(!groups[n]) groups[n]=r; });
   const gArr = Object.values(groups);
-  document.getElementById('sA').textContent  = gArr.filter(r=>effectiveStatus(r)==='Active').length;
+  document.getElementById('sA').textContent  = gArr.filter(r=>effectiveStatus(r)==='In Stock').length;
   document.getElementById('sN').textContent  = gArr.filter(r=>effectiveStatus(r)==='Nearly Empty').length;
   document.getElementById('sC').textContent  = gArr.filter(r=>effectiveStatus(r)==='Cannot Refill').length;
   document.getElementById('sX').textContent  = gArr.filter(r=>r['Collaboration Type']?.startsWith('XB Bean')).length;
@@ -2684,7 +2684,7 @@ function openDuplicate(rn){
 function closeFm(){ document.getElementById('fmOv').classList.remove('open'); }
 function clrFm(){
   Object.keys(FM).forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  document.getElementById('f_st').value='Active';
+  document.getElementById('f_st').value='In Stock';
 }
 function getFm(){
   const d={};
@@ -2934,9 +2934,9 @@ const STRINGS = {
     // Nav
     navCatalog:'Bean Catalog', navAdmin:'Admin Console',
     // Admin stats
-    statTotal:'Total', statActive:'Active', statNearlyEmpty:'Nearly Empty',
+    statTotal:'Total', statActive:'In Stock', statNearlyEmpty:'Nearly Empty',
     statCannotRefill:'Cannot Refill', statXB:'XB Bean', statCollab:'Collaboration',
-    optActive:'Active', optNearlyEmpty:'Nearly Empty', optCannotRefill:'Cannot Refill',
+    optActive:'In Stock', optNearlyEmpty:'Nearly Empty', optCannotRefill:'Cannot Refill',
     // Admin toolbar
     btnQuick:'Quick', btnFull:'Full', btnAnalytics:'Analytics',
     btnStockLog:'Stock Log', btnReload:'Reload', btnAddBean:'Add Bean',
@@ -3167,7 +3167,7 @@ function applyLang(){
   const fst = document.getElementById('f_st');
   if(fst && fst.options.length >= 3){
     const isTH2 = currentLang === 'th';
-    fst.options[0].text = isTH2 ? '\u0e21\u0e35\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32' : 'Active';
+    fst.options[0].text = isTH2 ? '\u0e21\u0e35\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32' : 'In Stock';
     fst.options[1].text = isTH2 ? '\u0e43\u0e01\u0e25\u0e49\u0e2b\u0e21\u0e14' : 'Nearly Empty';
     fst.options[2].text = isTH2 ? '\u0e2b\u0e21\u0e14\u0e41\u0e25\u0e49\u0e27' : 'Cannot Refill';
   }
