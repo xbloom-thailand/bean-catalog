@@ -392,19 +392,19 @@ select.cat-dd.on { border-color: var(--dark); color: var(--dark); background: va
   padding-top: 12px; border-top: 1px solid var(--border2);
 }
 .card-buy {
-  display: flex; gap: 8px; padding: 10px 0 2px;
+  display: flex; gap: 6px; padding: 8px 0 2px;
+  width: 100%;
 }
 .buy-btn {
-  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 9px 12px; border-radius: 6px;
-  font-size: 12px; font-weight: 500; letter-spacing: .3px;
-  text-decoration: none; transition: all .15s; border: 1px solid var(--border);
-  font-family: inherit;
+  flex: 1; min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  padding: 6px 10px; border-radius: 5px; height: 30px; box-sizing: border-box;
+  font-size: 10px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase;
+  text-decoration: none; transition: all .2s; font-family: inherit;
+  border: 1px solid var(--border2); background: transparent; color: var(--light);
 }
-.buy-shopee { background: rgba(238,77,45,.06); color: #ee4d2d; border-color: rgba(238,77,45,.2); }
-.buy-shopee:hover { background: rgba(238,77,45,.12); border-color: rgba(238,77,45,.4); }
-.buy-line { background: rgba(6,199,85,.06); color: #06a845; border-color: rgba(6,199,85,.2); }
-.buy-line:hover { background: rgba(6,199,85,.12); border-color: rgba(6,199,85,.4); }
+.buy-btn:hover { border-color: var(--mid); color: var(--dark); background: var(--bg); }
+.buy-shopee:hover { border-color: rgba(238,77,45,.4); color: #ee4d2d; background: rgba(238,77,45,.04); }
+.buy-line:hover   { border-color: rgba(6,199,85,.4);  color: #06a845; background: rgba(6,199,85,.04); }
 .pack-label { font-size: 10px; letter-spacing: .5px; color: var(--lighter); text-transform: uppercase; }
 .recipe-btns { display: flex; gap: 5px; }
 .rbtn {
