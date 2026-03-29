@@ -322,202 +322,142 @@ body {
 <!-- ── Form ── -->
 <div class="form-wrap" id="formWrap">
 
+  <!-- Partner type selector -->
+  <div class="section" style="margin-bottom:20px">
+    <div class="section-body" style="padding:16px 20px">
+      <div style="font-size:13px;font-weight:600;color:var(--dark);margin-bottom:12px">คุณเป็น Partner แบบไหน?</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <label class="radio-card selected" id="rtNew" style="margin:0">
+          <input type="radio" name="partner_type" value="new" checked onchange="switchPartnerType('new')">
+          <div>
+            <div class="radio-label">🆕 Partner ใหม่</div>
+            <div class="radio-sub">ยังไม่เคยทำ xPod กับ xBloom มาก่อน</div>
+          </div>
+        </label>
+        <label class="radio-card" id="rtExisting" style="margin:0">
+          <input type="radio" name="partner_type" value="existing" onchange="switchPartnerType('existing')">
+          <div>
+            <div class="radio-label">🔄 Partner เดิม</div>
+            <div class="radio-sub">เคยทำ xPod กับ xBloom แล้ว ต้องการเพิ่มเมล็ดใหม่</div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </div>
+
   <!-- Section 0: Partner Info -->
   <div class="section">
     <div class="section-header">
       <div class="section-num">0</div>
       <div>
         <div class="section-title">Partner Information</div>
-        <div class="section-sub">ข้อมูลร้านและผู้ส่งฟอร์ม</div>
+        <div class="section-sub">ข้อมูลร้านและบริษัท</div>
       </div>
     </div>
     <div class="section-body">
-      <div class="fg f2">
+
+      <!-- Existing partner: just pick from dropdown -->
+      <div id="existingPartnerPick" style="display:none">
         <div class="fi">
-          <label>Partner / ชื่อร้าน <span class="req">*</span></label>
-          <input id="p_partner" placeholder="Casa Lapin, Roots, Pacamara…">
+          <label>เลือกชื่อ Partner <span class="req">*</span></label>
+          <select id="p_partner_existing" onchange="fillExistingPartner(this.value)">
+            <option value="">— กำลังโหลด… —</option>
+          </select>
+          <div class="hint">ข้อมูลบริษัทและผู้ติดต่อจะถูกดึงมาจากระบบอัตโนมัติ</div>
         </div>
-        <div class="fi">
+        <div id="existingPartnerPreview" style="display:none;background:var(--bg);border:1px solid var(--border2);border-radius:8px;padding:14px 16px;font-size:12px;color:var(--mid);line-height:1.8;margin-top:4px"></div>
+        <div class="fi" style="margin-top:4px">
           <label>ชื่อผู้ส่งฟอร์ม <span class="req">*</span></label>
-          <input id="p_sender" placeholder="คุณ…">
+          <input id="p_sender_existing" placeholder="คุณ…">
         </div>
       </div>
-      <div class="fg f2">
-        <div class="fi">
-          <label>อีเมลผู้ส่ง <span class="req">*</span></label>
-          <input id="p_email" type="email" placeholder="name@cafe.com">
-        </div>
-        <div class="fi">
-          <label>เบอร์ติดต่อ</label>
-          <input id="p_phone" placeholder="08x-xxx-xxxx">
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Section 1: Bean Details -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-num">1</div>
-      <div>
-        <div class="section-title">Bean Details</div>
-        <div class="section-sub">ข้อมูลเมล็ดกาแฟ</div>
-      </div>
-    </div>
-    <div class="section-body">
-      <div class="fi">
-        <label>Product Name / ชื่อสินค้า <span class="req">*</span></label>
-        <input id="p_name" placeholder="Peru Cusco Pacaypata Gesha">
-      </div>
-      <div class="fg f2">
-        <div class="fi">
-          <label>Origin / ที่มาของเมล็ด <span class="req">*</span></label>
-          <input id="p_origin" placeholder="Peru, Ethiopia, Colombia…">
-        </div>
-        <div class="fi">
-          <label>Farm / ชื่อฟาร์ม</label>
-          <input id="p_farm" placeholder="ชื่อฟาร์ม">
-        </div>
-      </div>
-      <div class="fg f3">
-        <div class="fi">
-          <label>Roast Level / ระดับคั่ว <span class="req">*</span></label>
-          <select id="p_roast">
-            <option value="">— เลือก —</option>
-            <option>Light</option>
-            <option>Light - Medium</option>
-            <option>Medium</option>
-            <option>Medium - Dark</option>
-            <option>Dark</option>
-          </select>
-        </div>
-        <div class="fi">
-          <label>Process / วิธีการ <span class="req">*</span></label>
-          <select id="p_process">
-            <option value="">— เลือก —</option>
-            <option>Washed</option>
-            <option>Natural</option>
-            <option>Honey</option>
-            <option>Anaerobic Washed</option>
-            <option>Anaerobic Natural</option>
-            <option>Wet Hulled</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="fi">
-          <label>Varieties / พันธุ์</label>
-          <input id="p_varieties" placeholder="Gesha, Caturra…">
-        </div>
-      </div>
-      <div class="fg f2">
-        <div class="fi">
-          <label>Altitude / ระดับความสูง</label>
-          <input id="p_altitude" placeholder="1,600 - 1,900 MASL.">
-        </div>
-        <div class="fi">
-          <label>Taste Notes / รสชาติ <span class="req">*</span></label>
-          <input id="p_taste" placeholder="White Floral, Apricot, Honey…">
-        </div>
-      </div>
-      <div class="fi">
-        <label>Quick Description / อธิบายรสชาติสั้นๆ</label>
-        <textarea id="p_desc" rows="3" placeholder="เช่น Smooth Lychee / Sweet Caramel / Apple Bloom&#10;กาแฟเปรูเป็น Washed Process สายพันธุ์เกชา ที่ให้รสชาติเบาสบาย…"></textarea>
-        <div class="hint">อธิบายให้ลูกค้าทั่วไปเข้าใจ ไม่ต้องใช้ศัพท์เทคนิค</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section 2: Recipe Links -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-num">2</div>
-      <div>
-        <div class="section-title">xBloom Recipe Links</div>
-        <div class="section-sub">ลิงก์สูตรชง hot/cold จากแอป xBloom</div>
-      </div>
-    </div>
-    <div class="section-body">
-      <div class="fg f2">
-        <div class="fi">
-          <label>Hot Recipe Link</label>
-          <input id="p_hot" type="url" placeholder="https://share-h5.xbloom.com/?id=…">
-        </div>
-        <div class="fi">
-          <label>Cold Recipe Link</label>
-          <input id="p_cold" type="url" placeholder="https://share-h5.xbloom.com/?id=…">
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section 3: Graphic Files -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-num">3</div>
-      <div>
-        <div class="section-title">Graphic & Logo Files</div>
-        <div class="section-sub">กรุณาแนบลิงก์ Google Drive หรือ WeTransfer</div>
-      </div>
-    </div>
-    <div class="section-body">
-      <div class="file-hint">
-        <span>📁</span>
-        <div>อัปโหลดไฟล์ไปที่ Google Drive แล้วแชร์ลิงก์มาที่นี่ (Anyone with link can view)<br>
-        รองรับ: Brand Guideline PDF, Graphic AI/PSD/PNG, Logo AI/SVG/PNG</div>
-      </div>
-      <div class="fi">
-        <label>Brand Guideline (คู่มือแบรนด์ ถ้ามี)</label>
-        <input id="p_brand" type="url" placeholder="https://drive.google.com/…">
-      </div>
-      <div class="fg f2">
-        <div class="fi">
-          <label>Graphic ที่ใช้อยู่ (ถ้ามี)</label>
-          <input id="p_graphic" type="url" placeholder="https://drive.google.com/…">
-        </div>
-        <div class="fi">
-          <label>Logo ร้าน</label>
-          <input id="p_logo" type="url" placeholder="https://drive.google.com/…">
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Section 4: Agreement Type -->
-  <div class="section">
-    <div class="section-header">
-      <div class="section-num">4</div>
-      <div>
-        <div class="section-title">รูปแบบความร่วมมือ</div>
-        <div class="section-sub">เลือก Type ที่ตรงกับข้อตกลง</div>
-      </div>
-    </div>
-    <div class="section-body">
-      <div class="radio-group">
-        <label class="radio-card" id="rc1">
-          <input type="radio" name="collab_type" value="Type 1" onchange="selectType(this)">
-          <div>
-            <div class="radio-label">Type 1 — xBloom ซื้อเมล็ดจาก Partner</div>
-            <div class="radio-sub">xBloom Thailand ซื้อเมล็ดในราคาที่ตกลงกัน ต่อกิโลกรัม</div>
-            <div class="price-row" id="priceRow" style="display:none">
-              <label>ราคา (บาท/กิโล):</label>
-              <input class="price-input" id="p_price" type="number" placeholder="0" min="0">
+      <!-- New partner: full form -->
+      <div id="newPartnerFields">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lighter);display:flex;align-items:center;gap:8px">ร้าน / แบรนด์ <span style="flex:1;height:1px;background:var(--border2)"></span></div>
+          <div class="fg f2">
+            <div class="fi">
+              <label>Partner / ชื่อร้าน <span class="req">*</span></label>
+              <input id="p_partner" placeholder="Casa Lapin, Roots, Pacamara…">
+            </div>
+            <div class="fi">
+              <label>ชื่อผู้ส่งฟอร์ม <span class="req">*</span></label>
+              <input id="p_sender" placeholder="คุณ…">
             </div>
           </div>
-        </label>
-        <label class="radio-card" id="rc2">
-          <input type="radio" name="collab_type" value="Type 2" onchange="selectType(this)">
-          <div>
-            <div class="radio-label">Type 2 — Partner ส่งเมล็ดให้ xBloom บรรจุ</div>
-            <div class="radio-sub">Partner ส่งเมล็ดมาให้ xBloom Thailand บรรจุ ค่าบรรจุ 45 บาท/พอต รวมทุกอย่าง</div>
+
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lighter);display:flex;align-items:center;gap:8px">
+            บริษัท
+            <span style="flex:1;height:1px;background:var(--border2)"></span>
+            <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:var(--mid);text-transform:none;letter-spacing:0;cursor:pointer;white-space:nowrap">
+              <input type="checkbox" id="noCompany" onchange="toggleCompany(this)" style="accent-color:var(--dark)">
+              ไม่ได้จดทะเบียนบริษัท
+            </label>
           </div>
-        </label>
+          <div id="companyFields">
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="fg f2">
+                <div class="fi">
+                  <label>ชื่อบริษัท <span class="req">*</span></label>
+                  <input id="p_company" placeholder="บริษัท…">
+                </div>
+                <div class="fi">
+                  <label>เลขที่เสียภาษี <span class="req">*</span></label>
+                  <input id="p_taxid" placeholder="0-0000-00000-00-0">
+                </div>
+              </div>
+              <div class="fg f2">
+                <div class="fi">
+                  <label>เบอร์โทรบริษัท <span class="req">*</span></label>
+                  <input id="p_bizphone" placeholder="02-xxx-xxxx">
+                </div>
+                <div class="fi"></div>
+              </div>
+              <div class="fi">
+                <label>ที่อยู่บริษัท <span class="req">*</span></label>
+                <textarea id="p_address" rows="2" placeholder="เลขที่ อาคาร ถนน แขวง เขต จังหวัด รหัสไปรษณีย์"></textarea>
+              </div>
+            </div>
+          </div>
+          <div id="noCompanyFields" style="display:none">
+            <div class="fi">
+              <label>ที่อยู่ / สถานที่ติดต่อ <span class="req">*</span></label>
+              <textarea id="p_address_solo" rows="2" placeholder="ที่อยู่สำหรับติดต่อ"></textarea>
+            </div>
+          </div>
+
+          <div style="font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--lighter);display:flex;align-items:center;gap:8px">ผู้ติดต่อ <span style="flex:1;height:1px;background:var(--border2)"></span></div>
+          <div class="fg f3">
+            <div class="fi">
+              <label>ชื่อผู้ติดต่อ <span class="req">*</span></label>
+              <input id="p_contact" placeholder="คุณ…">
+            </div>
+            <div class="fi">
+              <label>อีเมลผู้ติดต่อ <span class="req">*</span></label>
+              <input id="p_email" type="email" placeholder="name@cafe.com">
+            </div>
+            <div class="fi">
+              <label>เบอร์ผู้ติดต่อ <span class="req">*</span></label>
+              <input id="p_phone" placeholder="08x-xxx-xxxx">
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="fi" style="margin-top:4px">
-        <label>หมายเหตุ / เพิ่มเติม</label>
-        <textarea id="p_notes" rows="2" placeholder="ข้อมูลเพิ่มเติมหรือข้อตกลงพิเศษ…"></textarea>
-      </div>
+
     </div>
   </div>
+
+  <!-- Bean entries container -->
+  <div id="beanContainer"></div>
+
+  <!-- Add bean button -->
+  <button type="button" onclick="addBean()" style="width:100%;padding:14px;border:2px dashed var(--border);border-radius:12px;background:transparent;color:var(--mid);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px" id="addBeanBtn"
+    onmouseover="this.style.borderColor='var(--dark)';this.style.color='var(--dark)'"
+    onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--mid)'">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    เพิ่มเมล็ดอีก 1 รายการ
+  </button>
 
   <!-- Submit -->
   <div class="submit-wrap">
@@ -552,12 +492,236 @@ body {
 // ══════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQUdruS0f1h9ctm8jbWKSyIzJyuF5_oZ58lguSgB3GZrUjh380U9EwO8U8-obLpnEu/exec';
 
-// ── Radio select ──
-function selectType(radio){
-  document.getElementById('rc1').classList.toggle('selected', radio.value==='Type 1');
-  document.getElementById('rc2').classList.toggle('selected', radio.value==='Type 2');
-  document.getElementById('priceRow').style.display = radio.value==='Type 1' ? 'flex' : 'none';
+// ════════════════════════════════════
+//  MULTI-BEAN SYSTEM
+// ════════════════════════════════════
+let beanCount = 0;
+
+function beanTemplate(n){
+  const isFirst = n === 1;
+  return `
+  <div class="section bean-entry" id="beanEntry_${n}" style="position:relative">
+    <div class="section-header" style="justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="section-num">${n}</div>
+        <div>
+          <div class="section-title">Bean Details${!isFirst ? ` — เมล็ดที่ ${n}` : ''}</div>
+          <div class="section-sub">ข้อมูลเมล็ดกาแฟ</div>
+        </div>
+      </div>
+      ${!isFirst ? `<button type="button" onclick="removeBean(${n})" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--white);color:var(--light);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0" title="ลบเมล็ดนี้">✕</button>` : ''}
+    </div>
+    <div class="section-body">
+      <div class="fi">
+        <label>Product Name / ชื่อสินค้า <span class="req">*</span></label>
+        <input id="b${n}_name" placeholder="Peru Cusco Pacaypata Gesha">
+      </div>
+      <div class="fg f2">
+        <div class="fi">
+          <label>Origin / ที่มาของเมล็ด <span class="req">*</span></label>
+          <input id="b${n}_origin" placeholder="Peru, Ethiopia, Colombia…">
+        </div>
+        <div class="fi">
+          <label>Farm / ชื่อฟาร์ม <span class="req">*</span></label>
+          <input id="b${n}_farm" placeholder="ชื่อฟาร์ม (ถ้าไม่มีใส่ -)">
+        </div>
+      </div>
+      <div class="fg f3">
+        <div class="fi">
+          <label>Roast Level / ระดับคั่ว <span class="req">*</span></label>
+          <input id="b${n}_roast" placeholder="Light / Medium / Dark…">
+        </div>
+        <div class="fi">
+          <label>Process / วิธีการ <span class="req">*</span></label>
+          <input id="b${n}_process" placeholder="Washed / Natural / Honey…">
+        </div>
+        <div class="fi">
+          <label>Varieties / พันธุ์ <span class="req">*</span></label>
+          <input id="b${n}_varieties" placeholder="Gesha, Caturra…">
+        </div>
+      </div>
+      <div class="fg f2">
+        <div class="fi">
+          <label>Altitude / ระดับความสูง <span class="req">*</span></label>
+          <input id="b${n}_altitude" placeholder="1,600 - 1,900 MASL.">
+        </div>
+        <div class="fi">
+          <label>Taste Notes / รสชาติ <span class="req">*</span></label>
+          <input id="b${n}_taste" placeholder="White Floral, Apricot, Honey…">
+        </div>
+      </div>
+      <div class="fi">
+        <label>Quick Description / อธิบายรสชาติสั้นๆ <span class="req">*</span></label>
+        <textarea id="b${n}_desc" rows="3" placeholder="เช่น Smooth Lychee / Sweet Caramel / Apple Bloom&#10;กาแฟเปรูเป็น Washed Process สายพันธุ์เกชา ที่ให้รสชาติเบาสบาย…"></textarea>
+        <div class="hint">อธิบายให้ลูกค้าทั่วไปเข้าใจ ไม่ต้องใช้ศัพท์เทคนิค</div>
+      </div>
+      <div class="fi">
+        <label>ราคาเมล็ด (บาท/กิโล) <span class="req">*</span></label>
+        <input id="b${n}_price" type="number" placeholder="0" min="0" style="max-width:200px">
+        <div class="hint">ราคาที่ขายให้ xBloom Thailand ต่อกิโลกรัม</div>
+      </div>
+    </div>
+
+    <!-- Recipe Links -->
+    <div style="border-top:1px solid var(--border2);padding:18px 24px">
+      <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--lighter);margin-bottom:12px">xBloom Recipe Links</div>
+      <div class="fg f2">
+        <div class="fi">
+          <label>Hot Recipe Link <span class="req">*</span></label>
+          <input id="b${n}_hot" type="url" placeholder="https://share-h5.xbloom.com/?id=…">
+        </div>
+        <div class="fi">
+          <label>Cold Recipe Link <span class="req">*</span></label>
+          <input id="b${n}_cold" type="url" placeholder="https://share-h5.xbloom.com/?id=…">
+        </div>
+      </div>
+    </div>
+
+    <!-- Graphic Files -->
+    <div style="border-top:1px solid var(--border2);padding:18px 24px">
+      <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--lighter);margin-bottom:12px">Graphic & Logo Files</div>
+      <div class="file-hint" style="margin-bottom:12px">
+        <span>📁</span>
+        <div>อัปโหลดไฟล์ไปที่ Google Drive แล้วแชร์ลิงก์มาที่นี่ (Anyone with link can view)</div>
+      </div>
+      <div class="fg f3">
+        <div class="fi">
+          <label>Brand Guideline (ถ้ามี)</label>
+          <input id="b${n}_brand" type="url" placeholder="https://drive.google.com/…">
+        </div>
+        <div class="fi">
+          <label>Graphic (ถ้ามี)</label>
+          <input id="b${n}_graphic" type="url" placeholder="https://drive.google.com/…">
+        </div>
+        <div class="fi">
+          <label>Logo ร้าน</label>
+          <input id="b${n}_logo" type="url" placeholder="https://drive.google.com/…">
+        </div>
+      </div>
+    </div>
+  </div>`;
 }
+
+function addBean(){
+  beanCount++;
+  const container = document.getElementById('beanContainer');
+  const div = document.createElement('div');
+  div.innerHTML = beanTemplate(beanCount);
+  container.appendChild(div.firstElementChild);
+  if(beanCount > 1){
+    document.getElementById(`beanEntry_${beanCount}`)
+      .scrollIntoView({behavior:'smooth', block:'start'});
+  }
+}
+
+function removeBean(n){
+  document.getElementById(`beanEntry_${n}`)?.remove();
+}
+
+function validateBean(n){
+  const fields = ['name','origin','farm','roast','process','varieties','altitude','taste','desc','hot','cold'];
+  for(const f of fields){
+    const el = document.getElementById(`b${n}_${f}`);
+    if(!el) continue;
+    if(!el.value.trim()){
+      el.classList.add('err');
+      showErr(`เมล็ดที่ ${n}: กรุณากรอก ${f}`);
+      el.scrollIntoView({behavior:'smooth', block:'center'});
+      return false;
+    }
+  }
+  const priceEl = document.getElementById(`b${n}_price`);
+  if(!priceEl?.value){ priceEl?.classList.add('err'); showErr(`เมล็ดที่ ${n}: กรุณาใส่ราคา`); return false; }
+  return true;
+}
+
+function getBeanData(n){
+  const g = id => document.getElementById(`b${n}_${id}`)?.value?.trim() || '';
+  return {
+    'Item Name':        g('name'),
+    'Origin':           g('origin'),
+    'Farm':             g('farm'),
+    'Roasting Level':   g('roast'),
+    'Process Method':   g('process'),
+    'Varieties':        g('varieties'),
+    'Elevation':        g('altitude'),
+    'Tasting Notes':    g('taste'),
+    'Bean Description': g('desc'),
+    'Price Per KG':     g('price'),
+    'Hot Recipe Link':  g('hot'),
+    'Cold Recipe Link': g('cold'),
+    'Brand Guideline':  g('brand'),
+    'Graphic Link':     g('graphic'),
+    'Logo Link':        g('logo'),
+  };
+}
+
+// Init first bean on load
+document.addEventListener('DOMContentLoaded', () => addBean());
+
+// ── Partner type switch ──
+let existingPartnersCache = [];
+let selectedExistingPartner = null;
+
+function switchPartnerType(type){
+  const isExisting = type === 'existing';
+  document.getElementById('rtNew').classList.toggle('selected', !isExisting);
+  document.getElementById('rtExisting').classList.toggle('selected', isExisting);
+  document.getElementById('existingPartnerPick').style.display = isExisting ? '' : 'none';
+  document.getElementById('newPartnerFields').style.display    = isExisting ? 'none' : '';
+  if(isExisting && existingPartnersCache.length === 0) loadExistingPartners();
+}
+
+function loadExistingPartners(){
+  const sel = document.getElementById('p_partner_existing');
+  sel.innerHTML = '<option value="">— กำลังโหลด… —</option>';
+  const cb = '_ep' + Date.now();
+  window[cb] = function(res){
+    document.getElementById('_epScript')?.remove();
+    delete window[cb];
+    if(res.status === 'ok' && res.data?.length){
+      existingPartnersCache = res.data;
+      sel.innerHTML = '<option value="">— เลือก Partner —</option>';
+      res.data.forEach(p => {
+        const name = p['Partner Name'] || '';
+        if(name) sel.innerHTML += `<option value="${name}">${name}</option>`;
+      });
+    } else {
+      sel.innerHTML = '<option value="">ไม่พบข้อมูล Partner</option>';
+    }
+  };
+  const s = document.createElement('script');
+  s.id = '_epScript';
+  s.src = SCRIPT_URL + '?' + new URLSearchParams({ action:'getAll', sheet:'Partners', callback:cb });
+  document.body.appendChild(s);
+}
+
+function fillExistingPartner(name){
+  selectedExistingPartner = null;
+  const preview = document.getElementById('existingPartnerPreview');
+  if(!name){ preview.style.display = 'none'; return; }
+  const p = existingPartnersCache.find(r => r['Partner Name'] === name);
+  if(!p){ preview.style.display = 'none'; return; }
+  selectedExistingPartner = p;
+  const lines = [
+    p['Company Name'] ? `🏢 ${p['Company Name']}` : '',
+    p['Tax ID']       ? `📋 เลขภาษี ${p['Tax ID']}` : '',
+    p['Address']      ? `📍 ${p['Address']}` : '',
+    p['Contact Name'] ? `👤 ${p['Contact Name']}` : '',
+    p['Email']        ? `✉️ ${p['Email']}` : '',
+    p['Contact Phone']||p['Phone'] ? `📞 ${p['Contact Phone']||p['Phone']}` : '',
+  ].filter(Boolean);
+  preview.innerHTML = lines.join('<br>') || 'ไม่มีข้อมูลเพิ่มเติม';
+  preview.style.display = 'block';
+}
+
+// ── Company toggle ──
+function toggleCompany(cb){
+  const hasCompany = !cb.checked;
+  document.getElementById('companyFields').style.display   = hasCompany ? '' : 'none';
+  document.getElementById('noCompanyFields').style.display = hasCompany ? 'none' : '';
+}
+
 
 // ── Toast ──
 function showErr(msg){
@@ -581,77 +745,133 @@ function submitForm(){
   document.querySelectorAll('.err').forEach(e=>e.classList.remove('err'));
 
   // Validate
-  if(!required('p_partner','ชื่อร้าน')) return;
-  if(!required('p_sender','ชื่อผู้ส่ง')) return;
-  if(!required('p_email','อีเมล')) return;
-  if(!required('p_name','ชื่อสินค้า')) return;
-  if(!required('p_origin','Origin')) return;
-  if(!required('p_roast','Roast Level')) return;
-  if(!required('p_process','Process')) return;
-  if(!required('p_taste','Taste Notes')) return;
+  const isExisting = document.querySelector('input[name=partner_type]:checked')?.value === 'existing';
+  let partnerName, senderName, companyData;
 
-  const collabType = document.querySelector('input[name=collab_type]:checked')?.value || '';
-  if(!collabType){ showErr('กรุณาเลือกรูปแบบความร่วมมือ'); return; }
+  if(isExisting){
+    partnerName = document.getElementById('p_partner_existing').value.trim();
+    senderName  = document.getElementById('p_sender_existing').value.trim();
+    if(!partnerName){ showErr('กรุณาเลือก Partner'); return; }
+    if(!senderName) { showErr('กรุณาใส่ชื่อผู้ส่ง'); return; }
+    const p = selectedExistingPartner || {};
+    companyData = {
+      'Company Name':  p['Company Name']  || '',
+      'Tax ID':        p['Tax ID']        || '',
+      'Biz Phone':     p['Phone']         || '',
+      'Address':       p['Address']       || '',
+      'Contact Name':  p['Contact Name']  || '',
+      'Contact Phone': p['Contact Phone'] || p['Phone'] || '',
+      'Sender Email':  p['Email']         || '',
+      'Sender Phone':  p['Contact Phone'] || p['Phone'] || '',
+    };
+  } else {
+    partnerName = document.getElementById('p_partner').value.trim();
+    senderName  = document.getElementById('p_sender').value.trim();
+    if(!partnerName){ showErr('กรุณาใส่ชื่อร้าน'); return; }
+    if(!senderName) { showErr('กรุณาใส่ชื่อผู้ส่ง'); return; }
+    if(!required('p_contact','ชื่อผู้ติดต่อ')) return;
+    if(!required('p_email','อีเมล')) return;
+    if(!required('p_phone','เบอร์ผู้ติดต่อ')) return;
+    const noCompany = document.getElementById('noCompany').checked;
+    if(!noCompany){
+      if(!required('p_company','ชื่อบริษัท')) return;
+      if(!required('p_taxid','เลขที่เสียภาษี')) return;
+      if(!required('p_bizphone','เบอร์โทรบริษัท')) return;
+      if(!required('p_address','ที่อยู่บริษัท')) return;
+    } else {
+      if(!required('p_address_solo','ที่อยู่')) return;
+    }
+    companyData = {
+      'Company Name':  noCompany ? 'บุคคลธรรมดา / ไม่จดทะเบียน' : document.getElementById('p_company').value.trim(),
+      'Tax ID':        noCompany ? '' : document.getElementById('p_taxid').value.trim(),
+      'Biz Phone':     noCompany ? '' : document.getElementById('p_bizphone').value.trim(),
+      'Address':       noCompany ? document.getElementById('p_address_solo').value.trim() : document.getElementById('p_address').value.trim(),
+      'Contact Name':  document.getElementById('p_contact').value.trim(),
+      'Contact Phone': document.getElementById('p_phone').value.trim(),
+      'Sender Email':  document.getElementById('p_email').value.trim(),
+      'Sender Phone':  document.getElementById('p_phone').value.trim(),
+    };
+  }
+  // Validate all beans
+  const entries = document.querySelectorAll('.bean-entry');
+  if(!entries.length){ showErr('กรุณาเพิ่มข้อมูลเมล็ดอย่างน้อย 1 รายการ'); return; }
+  for(const entry of entries){
+    const n = entry.id.replace('beanEntry_','');
+    if(!validateBean(n)) return;
+  }
 
-  const data = {
-    'Partner Name':     document.getElementById('p_partner').value.trim(),
-    'Sender Name':      document.getElementById('p_sender').value.trim(),
-    'Sender Email':     document.getElementById('p_email').value.trim(),
-    'Sender Phone':     document.getElementById('p_phone').value.trim(),
-    'Item Name':        document.getElementById('p_name').value.trim(),
-    'Origin':           document.getElementById('p_origin').value.trim(),
-    'Farm':             document.getElementById('p_farm').value.trim(),
-    'Roasting Level':   document.getElementById('p_roast').value,
-    'Process Method':   document.getElementById('p_process').value,
-    'Varieties':        document.getElementById('p_varieties').value.trim(),
-    'Elevation':        document.getElementById('p_altitude').value.trim(),
-    'Tasting Notes':    document.getElementById('p_taste').value.trim(),
-    'Bean Description': document.getElementById('p_desc').value.trim(),
-    'Hot Recipe Link':  document.getElementById('p_hot').value.trim(),
-    'Cold Recipe Link': document.getElementById('p_cold').value.trim(),
-    'Brand Guideline':  document.getElementById('p_brand').value.trim(),
-    'Graphic Link':     document.getElementById('p_graphic').value.trim(),
-    'Logo Link':        document.getElementById('p_logo').value.trim(),
-    'Collab Type':      collabType,
-    'Price Per KG':     collabType==='Type 1' ? (document.getElementById('p_price').value||'') : '',
-    'Notes':            document.getElementById('p_notes').value.trim(),
-    'Submitted At':     new Date().toLocaleString('th-TH',{timeZone:'Asia/Bangkok'}),
-    'Status':           'Pending',
+  // Collect all beans
+  const beans = [];
+  for(const entry of entries){
+    const n = entry.id.replace('beanEntry_','');
+    beans.push(getBeanData(n));
+  }
+
+  const partnerBase = {
+    'Partner Name':  partnerName,
+    'Sender Name':   senderName,
+    'Sender Email':  companyData['Sender Email'],
+    'Sender Phone':  companyData['Sender Phone'],
+    'Company Name':  companyData['Company Name'],
+    'Tax ID':        companyData['Tax ID'],
+    'Biz Phone':     companyData['Biz Phone'],
+    'Address':       companyData['Address'],
+    'Contact Name':  companyData['Contact Name'],
+    'Contact Phone': companyData['Contact Phone'],
+    'Submitted At':  new Date().toLocaleString('th-TH',{timeZone:'Asia/Bangkok'}),
+    'Status':        'Pending',
   };
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span> กำลังส่ง…';
 
-  const cb = '_sub' + Date.now();
-  window[cb] = function(res){
-    document.getElementById('_subScript')?.remove();
-    delete window[cb];
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ส่งข้อมูล';
-    if(res.status === 'ok'){
+  // Send all beans sequentially
+  let sent = 0;
+  function sendNext(){
+    if(sent >= beans.length){
+      // All done
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ส่งข้อมูล';
       document.getElementById('formWrap').style.display = 'none';
       document.getElementById('successScreen').style.display = 'block';
-      document.getElementById('successName').textContent = data['Partner Name'] + ' — ' + data['Item Name'];
-    } else {
-      showErr('เกิดข้อผิดพลาด: ' + (res.message||'ลองอีกครั้ง'));
+      document.getElementById('successName').textContent =
+        partnerName + ' — ' + beans.map(b=>b['Item Name']).join(', ');
+      return;
     }
-  };
-  const s = document.createElement('script');
-  s.id = '_subScript';
-  s.src = SCRIPT_URL + '?' + new URLSearchParams({
-    action: 'submitPending',
-    callback: cb,
-    data: JSON.stringify(data)
-  });
-  s.onerror = function(){
-    document.getElementById('_subScript')?.remove();
-    delete window[cb];
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ส่งข้อมูล';
-    showErr('เชื่อมต่อไม่ได้ กรุณาลองอีกครั้ง');
-  };
-  document.body.appendChild(s);
+    const data = Object.assign({}, partnerBase, beans[sent]);
+    data['Bean Number'] = sent + 1;
+    sent++;
+    const cb = '_sub' + Date.now();
+    window[cb] = function(res){
+      document.getElementById('_subScript')?.remove();
+      delete window[cb];
+      if(res.status === 'ok'){
+        btn.innerHTML = `<span class="spin"></span> ส่งแล้ว ${sent}/${beans.length}…`;
+        sendNext();
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ส่งข้อมูล';
+        showErr('เกิดข้อผิดพลาด: ' + (res.message||'ลองอีกครั้ง'));
+      }
+    };
+    const s = document.createElement('script');
+    s.id = '_subScript';
+    s.src = SCRIPT_URL + '?' + new URLSearchParams({
+      action: 'submitPending',
+      callback: cb,
+      data: JSON.stringify(data)
+    });
+    s.onerror = function(){
+      document.getElementById('_subScript')?.remove();
+      delete window[cb];
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> ส่งข้อมูล';
+      showErr('เชื่อมต่อไม่ได้ กรุณาลองอีกครั้ง');
+    };
+    document.body.appendChild(s);
+  }
+  sendNext();
 }
 </script>
 </body>
