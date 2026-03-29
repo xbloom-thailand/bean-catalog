@@ -37,8 +37,8 @@
 :root {
   --cream: #ebebе7;
   --cream: #eaeae6;
-  --white: #f5f5f1;
-  --bg: #f0f0ec;
+  --white: #ffffff;
+  --bg: #f8f8f6;
   --dark: #1a1a18;
   --dark2: #2d2d2a;
   --mid: #6b6b64;
@@ -77,10 +77,10 @@ body {
 ══════════════════════════════════════ */
 nav {
   position: sticky; top: 0; z-index: 100;
-  background: rgba(240,240,236,.92);
+  background: rgba(20,20,18,.96);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255,255,255,.08);
   height: 50px;
   display: flex; align-items: center;
   padding: 0 24px; gap: 0;
@@ -88,46 +88,59 @@ nav {
 .nav-brand {
   display: flex; align-items: center;
   white-space: nowrap; margin-right: 24px;
+  height: 100%;
 }
 .nav-brand-xbloom {
   font-family: 'Quincy CF', 'Libre Baskerville', Georgia, serif;
   font-size: 19px; font-weight: 400; font-style: normal;
-  color: var(--dark); letter-spacing: -.3px; line-height: 1;
+  color: #fff; letter-spacing: -.3px; line-height: 1;
 }
 .nav-brand-sep {
   width: 1px; height: 17px;
-  background: var(--dark2); opacity: .55;
+  background: #fff; opacity: .25;
   margin: 0 11px;
 }
 .nav-brand-thailand {
   font-family: 'Quincy CF', 'Libre Baskerville', Georgia, serif;
   font-size: 19px; font-weight: 400; font-style: normal;
-  color: var(--dark); letter-spacing: -.3px; line-height: 1;
+  color: rgba(255,255,255,.7); letter-spacing: -.3px; line-height: 1;
 }
 .nav-tabs { display: flex; gap: 2px; flex: 1; }
 .ntab {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 0 14px; height: 50px;
   font-size: 12px; font-weight: 500; letter-spacing: .2px;
-  color: var(--light); cursor: pointer;
+  color: rgba(255,255,255,.45); cursor: pointer;
   border: none; background: transparent;
   border-bottom: 2px solid transparent;
   transition: all .15s; font-family: inherit;
   white-space: nowrap;
 }
-.ntab:hover { color: var(--dark2); }
-.ntab.active { color: var(--dark); border-bottom-color: var(--dark); }
+.ntab:hover { color: rgba(255,255,255,.8); }
+.ntab.active { color: #fff; border-bottom-color: #fff; }
 .ntab svg { opacity: .5; }
 .ntab.active svg { opacity: 1; }
 
 .nav-r { margin-left: auto; display: flex; gap: 8px; align-items: center; }
 .sync-wrap {
   display: flex; align-items: center; gap: 5px;
-  font-size: 11px; color: var(--light);
+  font-size: 11px; color: rgba(255,255,255,.6);
   padding: 4px 10px; border-radius: 20px;
-  background: var(--white); border: 1px solid var(--border);
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
 }
 .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--lighter); flex-shrink: 0; }
+
+/* ── Dark nav button overrides ── */
+nav .btn-outline {
+  background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); color: rgba(255,255,255,.75);
+}
+nav .btn-outline:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.35); color: #fff; }
+nav .btn-dark { background: #fff; color: var(--dark); }
+nav .lang-toggle { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); color: rgba(255,255,255,.75); }
+nav .lang-toggle:hover { border-color: rgba(255,255,255,.35); color: #fff; }
+nav .lang-toggle.th { background: #fff; border-color: #fff; color: var(--dark); }
+#lockBtn { color: rgba(255,255,255,.45); border-color: rgba(255,255,255,.15); background: rgba(255,255,255,.06); }
+#lockBtn:hover { opacity: 1 !important; color: #fff; border-color: rgba(255,255,255,.4); }
 .sync-dot.live { background: var(--green2); animation: pulse 2.5s infinite; }
 .sync-dot.loading { background: var(--orange); animation: blink .7s infinite; }
 .sync-dot.err { background: var(--red); }
@@ -166,14 +179,14 @@ nav {
    CATALOG PAGE
 ══════════════════════════════════════ */
 .cat-hero {
-  padding: 56px 32px 40px;
+  padding: 32px 32px 24px;
   border-bottom: 1px solid var(--border);
   background: var(--white);
 }
 .cat-hero-inner { max-width: 560px; }
 .cat-title {
   font-family: 'Quincy CF', 'Libre Baskerville', Georgia, serif;
-  font-size: 44px; font-weight: 300; letter-spacing: -.5px;
+  font-size: 36px; font-weight: 300; letter-spacing: -.5px;
   line-height: 1.1; margin-bottom: 10px;
 }
 .cat-title em { font-style: italic; }
@@ -267,7 +280,7 @@ select.cat-dd.on { border-color: var(--dark); color: var(--dark); background: va
 .cat-grid {
   padding: 28px 32px 60px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
 }
 
@@ -908,16 +921,16 @@ tbody tr:hover td { background: #f9f9f5; }
   nav { padding: 0 14px; gap: 0; height: 48px; }
   .nav-brand { margin-right: 8px; }
   .nav-brand-xbloom { font-size: 15px; }
-  .nav-brand-sep { display: none; }
-  .nav-brand-thailand { display: none; }
+  .nav-brand-sep { display: inline-block; margin: 0 7px; opacity: .2; }
+  .nav-brand-thailand { font-size: 15px; color: #fff; opacity: 1; }
   .nav-tabs { gap: 0; flex: 1; }
-  .ntab { padding: 0 12px; font-size: 12px; gap: 4px; height: 48px; }
+  .ntab { padding: 0 10px; font-size: 12px; gap: 4px; height: 48px; }
   .ntab svg { display: none; }
   .nav-r { gap: 5px; }
   .sync-wrap { display: none; }
   .btn-sm { padding: 5px 9px; font-size: 11px; }
   .lang-toggle { width: 34px; height: 28px; font-size: 10px; }
-  #settingsBtn { display: none !important; } /* hide settings in mobile nav — use admin console */
+  #settingsBtn { display: none !important; }
 
   /* ── Hero ── */
   .cat-hero { padding: 24px 16px 20px; }
@@ -1044,8 +1057,8 @@ tbody tr:hover td { background: #f9f9f5; }
 <div class="page active" id="pageCat">
   <div class="cat-hero">
     <div class="cat-hero-inner">
-      <h1 class="cat-title">Our Bean Collection</h1>
-      <p class="cat-sub">Only the finest beans, curated for you</p>
+      <h1 class="cat-title">Our Bean &amp; Tea Collection</h1>
+      <p class="cat-sub">Only the finest beans &amp; teas, curated for you</p>
     </div>
   </div>
   <!-- search bar row -->
@@ -2975,7 +2988,7 @@ let currentLang = localStorage.getItem('xb_lang') || 'en';
 const STRINGS = {
   en: {
     // Catalog
-    heroTitle:'Our Bean Collection', heroSub:'Only the finest beans, curated for you',
+    heroTitle:'Our Bean & Tea Collection', heroSub:'Only the finest beans & teas, curated for you',
     searchPh:'Search beans\u2026', filterBtn:'Filter',
     roastedBy:'Roasted by', origin:'Origin', process:'Process',
     roast:'Roast', farm:'Farm', varieties:'Varieties', elevation:'Elevation', collab:'Collab',
