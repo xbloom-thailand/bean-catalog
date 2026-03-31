@@ -1154,6 +1154,10 @@ tbody tr:hover td { background: #f9f9f5; }
           <button class="vtab active" id="vtQuick" onclick="setView('quick')">Quick</button>
           <button class="vtab" id="vtFull" onclick="setView('full')">Full</button>
         </div>
+        <div class="view-toggle">
+          <button class="vtab" onclick="expandAllGroups()" title="Expand all">⊞ Expand All</button>
+          <button class="vtab" onclick="collapseAllGroups()" title="Collapse all">⊟ Collapse All</button>
+        </div>
         <button class="btn btn-outline btn-sm" onclick="openAnalytics()" data-i18n="btnAnalytics">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
           <span data-i18n="btnAnalytics">Analytics</span>
@@ -2981,11 +2985,32 @@ function sortBy(col){ if(sC===col)sA=!sA; else{sC=col;sA=true;} applyFilter(); }
 // ── Bean in Stock — read from first row of group, saved to Sheet ──
 function getBKG(rows){ return rows[0]?.['Bean in Stock (KG)'] || ''; }
 
+const openGroups = new Set(); // persist group open/close state across re-renders
+
 function toggleGroup(gid){
   const chevron = document.getElementById('chv_'+gid);
   const rows = document.querySelectorAll('.child-'+gid);
   const isOpen = chevron.classList.toggle('open');
   rows.forEach(r => r.classList.toggle('hidden', !isOpen));
+  if(isOpen) openGroups.add(gid); else openGroups.delete(gid);
+}
+
+function expandAllGroups(){
+  document.querySelectorAll('.grp-chevron').forEach(chv=>{
+    const gid = chv.id.replace('chv_','');
+    chv.classList.add('open');
+    document.querySelectorAll('.child-'+gid).forEach(r=>r.classList.remove('hidden'));
+    openGroups.add(gid);
+  });
+}
+
+function collapseAllGroups(){
+  document.querySelectorAll('.grp-chevron').forEach(chv=>{
+    const gid = chv.id.replace('chv_','');
+    chv.classList.remove('open');
+    document.querySelectorAll('.child-'+gid).forEach(r=>r.classList.add('hidden'));
+    openGroups.delete(gid);
+  });
 }
 
 function editBKG(firstRn, curVal){
@@ -3156,6 +3181,14 @@ function renderTable(){
   });
 
   document.getElementById('atb').innerHTML = html;
+
+  // Restore previously open groups
+  openGroups.forEach(gid=>{
+    const chv = document.getElementById('chv_'+gid);
+    if(!chv) return;
+    chv.classList.add('open');
+    document.querySelectorAll('.child-'+gid).forEach(r=>r.classList.remove('hidden'));
+  });
 }
 
 // Compute effective status — override to Nearly Empty if total stock < 10
